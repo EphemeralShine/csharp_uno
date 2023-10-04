@@ -8,13 +8,14 @@ var NewGameMenu = new Menu("New Game", new List<MenuItem>()
     new MenuItem()
     {
         Hotkey = "c",
-        Label = "Player count: " + game.Players.Count,
+        /*Label = "Player count: " + game.Players.Count,*/
+        //TODO: player count
     },
     new MenuItem()
     {
         Hotkey = "t",
         Label = "Player names and types: ",
-        //TODO: player count
+        //TODO: player types
     },
     new MenuItem()
     {
@@ -23,4 +24,6 @@ var NewGameMenu = new Menu("New Game", new List<MenuItem>()
         //TODO: Start game 
     },
 });
+
+var userChoice = NewGameMenu.Run();
 

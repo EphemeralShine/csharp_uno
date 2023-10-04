@@ -5,7 +5,7 @@ namespace MenuSystem;
 public class Menu
 {
     public string? Title { get; set; }
-    public List<MenuItem> MenuItems { get; set; } = new();
+    public Dictionary<string, string> MenuItems { get; set; } = new();
     private const string MenuSeparator = "======================";
     private static readonly HashSet<string> ReservedHotkeys = new() {"x", "b", "r"};
 
@@ -19,27 +19,29 @@ public class Menu
                 throw new ApplicationException(
                     $"Menu hotkey '{menuItem.Hotkey}'is reserved!");
             }
-
-            foreach (var item in MenuItems)
+            
+            if (MenuItems.ContainsKey(menuItem.Hotkey.ToLower()))
             {
-                if (item.Hotkey.Contains(menuItem.Hotkey.ToLower()))
-                {
-                    throw new ApplicationException(
-                        $"Hotkey '{menuItem.Hotkey}' already in use!");
-                }
+                throw new ApplicationException(
+                    $"Hotkey '{menuItem.Hotkey}' already in use!");
             }
-            MenuItems.Add(menuItem);
+
+            MenuItems[menuItem.Hotkey.ToLower()] = menuItem.Label;
         }
     }
     
     private void Draw()
     {
-        Console.WriteLine(Title);
-        Console.WriteLine(MenuSeparator);
+        if (!string.IsNullOrWhiteSpace(Title))
+        {
+            Console.WriteLine(Title);
+            Console.WriteLine(MenuSeparator);
+        }
+
         foreach (var menuItem in MenuItems)
         {
-            Console.Write($"{menuItem.Hotkey})");
-            Console.WriteLine(menuItem.Label);
+            Console.Write($"{menuItem.Key})");
+            Console.WriteLine(menuItem.Value);
         }
         // TODO: should not be there in the main level
         Console.WriteLine("b) Back");
@@ -57,20 +59,26 @@ public class Menu
     {
         Console.Clear();
         var userChoice = "";
-        Draw();
-        userChoice = Console.ReadLine()?.Trim();
-        if (String.IsNullOrWhiteSpace(userChoice))
+        do
         {
-            throw new ApplicationException(
-                "Provided empty input!");
-        }
-        foreach (var menuItem in MenuItems)
-        {
-            if (menuItem.Hotkey.ToLower().Contains(userChoice))
+            Draw();
+            userChoice = Console.ReadLine()?.Trim().ToLower();
+            /*if (String.IsNullOrWhiteSpace(userChoice))
             {
-                
+                throw new ApplicationException(
+                    "Provided empty input!");
+            }*/
+            if (userChoice != null && MenuItems.ContainsKey(userChoice))
+            {
+                //TODO: do smthing
+                Console.WriteLine("good");
             }
-        }
+            else if (!ReservedHotkeys.Contains(userChoice))
+            {
+                //TODO: do smthing
+                Console.WriteLine("Unknown");
+            }
+        } while (!ReservedHotkeys.Contains(userChoice));
 
         return userChoice;
     }
