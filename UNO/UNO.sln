@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{834631D4-4C9A-4191-B3C9-E3017BAEA63E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solutions Files", "!Solutions Files", "{E6A94EDA-B224-47CA-B9D6-425B34A94CFA}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		.gitignore = ../.gitignore
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MenuSystem", "MenuSystem\MenuSystem.csproj", "{D5EA5B94-D8D2-4DCD-9681-DE9E879910E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{834631D4-4C9A-4191-B3C9-E3017BAEA63E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{834631D4-4C9A-4191-B3C9-E3017BAEA63E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{834631D4-4C9A-4191-B3C9-E3017BAEA63E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{834631D4-4C9A-4191-B3C9-E3017BAEA63E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5EA5B94-D8D2-4DCD-9681-DE9E879910E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5EA5B94-D8D2-4DCD-9681-DE9E879910E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5EA5B94-D8D2-4DCD-9681-DE9E879910E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5EA5B94-D8D2-4DCD-9681-DE9E879910E3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
