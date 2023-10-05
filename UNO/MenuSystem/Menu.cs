@@ -5,7 +5,7 @@ namespace MenuSystem;
 public class Menu
 {
     public string? Title { get; set; }
-    public Dictionary<string, string> MenuItems { get; set; } = new();
+    public Dictionary<string, MenuItem> MenuItems { get; set; } = new();
     private const string MenuSeparator = "======================";
     private static readonly HashSet<string> ReservedHotkeys = new() {"x", "b", "r"};
 
@@ -26,7 +26,7 @@ public class Menu
                     $"Hotkey '{menuItem.Hotkey}' already in use!");
             }
 
-            MenuItems[menuItem.Hotkey.ToLower()] = menuItem.Label;
+            MenuItems[menuItem.Hotkey.ToLower()] = menuItem;
         }
     }
     
@@ -41,7 +41,7 @@ public class Menu
         foreach (var menuItem in MenuItems)
         {
             Console.Write($"{menuItem.Key})");
-            Console.WriteLine(menuItem.Value);
+            Console.WriteLine(menuItem.Value.Label);
         }
         // TODO: should not be there in the main level
         Console.WriteLine("b) Back");
@@ -63,22 +63,19 @@ public class Menu
         {
             Draw();
             userChoice = Console.ReadLine()?.Trim().ToLower();
-            /*if (String.IsNullOrWhiteSpace(userChoice))
-            {
-                throw new ApplicationException(
-                    "Provided empty input!");
-            }*/
             if (userChoice != null && MenuItems.ContainsKey(userChoice))
             {
-                //TODO: do smthing
-                Console.WriteLine("good");
+                if (MenuItems[userChoice].MethodToRun != null)
+                {
+                    var result = MenuItems[userChoice].MethodToRun!();
+                    Console.WriteLine(result);
+                }
             }
             else if (!ReservedHotkeys.Contains(userChoice))
             {
-                //TODO: do smthing
-                Console.WriteLine("Unknown");
+                Console.WriteLine("Unknown input!");
             }
-        } while (!ReservedHotkeys.Contains(userChoice));
+        } while (!ReservedHotkeys.Contains(userChoice!));
 
         return userChoice;
     }
