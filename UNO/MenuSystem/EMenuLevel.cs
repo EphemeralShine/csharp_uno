@@ -1,6 +1,6 @@
 ﻿namespace MenuSystem;
 
-public enum MenuType
+public enum EMenuLevel
 {
     Main,
     Sub1,

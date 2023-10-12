@@ -1,16 +1,18 @@
-using System.Reflection.Emit;
+using System.Security.Principal;
 
 namespace MenuSystem;
 
 public class Menu
 {
+    public EMenuLevel MenuLevel { get; set; }
     public string? Title { get; set; }
     public Dictionary<string, MenuItem> MenuItems { get; set; } = new();
     private const string MenuSeparator = "======================";
     private static readonly HashSet<string> ReservedHotkeys = new() {"x", "b", "r"};
 
-    public Menu(string? title, List<MenuItem> menuItems)
+    public Menu(string? title, List<MenuItem> menuItems, EMenuLevel menuLevel = EMenuLevel.Main)
     {
+        MenuLevel = menuLevel;
         Title = title;
         foreach (var menuItem in menuItems)
         {
@@ -43,11 +45,16 @@ public class Menu
             Console.Write($"{menuItem.Key})");
             Console.WriteLine(menuItem.Value.Label);
         }
-        // TODO: should not be there in the main level
-        Console.WriteLine("b) Back");
-        // TODO: should not be there in the main and second level
-        Console.WriteLine("r) Return to main");
 
+        if (MenuLevel == EMenuLevel.Sub2)
+        {
+            Console.WriteLine("b) Back");
+        }
+
+        if (MenuLevel != EMenuLevel.Main)
+        {
+            Console.WriteLine("r) Return to main");
+        }
         Console.WriteLine("x) eXit");
 
         Console.WriteLine(MenuSeparator);
@@ -57,26 +64,40 @@ public class Menu
 
     public string Run()
     {
-        Console.Clear();
         var userChoice = "";
-        do
+        Console.Clear();
+        while(!ReservedHotkeys.Contains(userChoice.ToLower()))
         {
             Draw();
             userChoice = Console.ReadLine()?.Trim().ToLower();
             if (userChoice != null && MenuItems.ContainsKey(userChoice))
             {
+                
                 if (MenuItems[userChoice].MethodToRun != null)
                 {
                     var result = MenuItems[userChoice].MethodToRun!();
-                    Console.WriteLine(result);
+                    if (result.ToLower() == "x")
+                    {
+                        userChoice = result;
+                    }
+                    if (result.ToLower() == "b")
+                    {
+                        Console.Clear();
+                        //TODO: Main menu no back available
+                    }                    
+                    if (result.ToLower() == "r" && MenuLevel != EMenuLevel.Main)
+                    {
+                        Console.Clear();
+                        userChoice = result;
+                        //TODO: Main menu no return available
+                    }
                 }
             }
-            else if (!ReservedHotkeys.Contains(userChoice))
+            else if (!ReservedHotkeys.Contains(userChoice?.ToLower()))
             {
                 Console.WriteLine("Unknown input!");
             }
-        } while (!ReservedHotkeys.Contains(userChoice!));
-
+        }
         return userChoice;
     }
 }
