@@ -64,41 +64,62 @@ public class Menu
 
     public string Run()
     {
+        /*while (true)
+        {*/
+        //TODO: Main menu no back available
         var userChoice = "";
         Console.Clear();
-        while(!ReservedHotkeys.Contains(userChoice.ToLower()))
-        {
-            Draw();
-            userChoice = Console.ReadLine()?.Trim().ToLower();
-            if (userChoice != null && MenuItems.ContainsKey(userChoice))
+            while (!ReservedHotkeys.Contains(userChoice.ToLower()))
             {
-                
-                if (MenuItems[userChoice].MethodToRun != null)
+                Draw();
+                userChoice = Console.ReadLine()?.Trim().ToLower();
+                if (userChoice != null && MenuItems.ContainsKey(userChoice))
                 {
-                    var result = MenuItems[userChoice].MethodToRun!();
-                    if (result.ToLower() == "x")
+
+                    if (MenuItems[userChoice].MethodToRun != null)
                     {
-                        userChoice = result;
-                    }
-                    if (result.ToLower() == "b")
-                    {
-                        Console.Clear();
-                        //TODO: Main menu no back available
-                    }                    
-                    if (result.ToLower() == "r" && MenuLevel != EMenuLevel.Main)
-                    {
-                        Console.Clear();
-                        userChoice = result;
-                        //TODO: Main menu no return available
+                        var result = MenuItems[userChoice].MethodToRun!();
+                        if (result.ToLower() == "x")
+                        {
+                            userChoice = result;
+                        }
+
+                        if (result.ToLower() == "b")
+                        {
+                            Console.Clear();
+                        }
+
+                        if (result.ToLower() == "r" && MenuLevel != EMenuLevel.Main)
+                        {
+                            Console.Clear();
+                            userChoice = result;
+                        }
                     }
                 }
+                else if (!ReservedHotkeys.Contains(userChoice?.ToLower()))
+                {
+                    Console.WriteLine("Unknown input!");
+                }
             }
-            else if (!ReservedHotkeys.Contains(userChoice?.ToLower()))
+            /*if (userChoice.ToLower() == "x")
             {
-                Console.WriteLine("Unknown input!");
+                return userChoice;
             }
-        }
-        return userChoice;
+            if (userChoice.ToLower() == "r" && MenuLevel == EMenuLevel.Main)
+            {
+                Console.Clear();
+                Console.WriteLine("Already in main menu");
+                userChoice = "";
+                continue;
+            }
+            if (userChoice.ToLower() == "b")
+            {
+                Console.Clear();
+                Console.WriteLine("Already in main menu");
+                userChoice = "";
+            }
+            }*/
+            return userChoice;
     }
 }
 
