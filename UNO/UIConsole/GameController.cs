@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text.RegularExpressions;
 using Domain;
 using UnoEngine;
 
@@ -11,6 +12,16 @@ public class GameController
     public GameController(GameEngine gameEngine)
     {
         _gameEngine = gameEngine;
+    }
+
+    private bool ValidateInput(string? input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return false;
+        }
+        string pattern = "^[0-9,]+$";
+        return Regex.IsMatch(input.Trim(), pattern);
     }
 
     public void GameLoop()
@@ -53,19 +64,38 @@ public class GameController
                         break;
                     }
                 }
-
                 //Ask for card input
-                Console.Write(
-                    $"Choose card(s) to play (first input card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:");
-                var playerChoiceStr = Console.ReadLine()?.Trim();
-                //Validate input
-                //TODO: implement
+                var playerChoiceStr = "";
+                while (true)//Input validation loop
+                {
+                    Console.Write(
+                        $"Choose card(s) to play (first input card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:");
+                    playerChoiceStr = Console.ReadLine();
+                    //Validate input
+                    if (ValidateInput(playerChoiceStr) == false)
+                    {
+                        Console.WriteLine("Wrong input style (correct input: 1,2,3)");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                var playerChoices = playerChoiceStr!.Split(",").Select(s => int.Parse(s.Trim()));
                 //Add cards to moveList
-                //TODO: implement
+                foreach (var num in playerChoices)
+                {
+                    if (num > _gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count || num < 1)
+                    {
+                        Console.WriteLine("No card with such index in your deck!");
+                        continue;
+                    }
+                    moveList.Add(_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand[num - 1]);
+                }
                 //Validate move legality
                 if (_gameEngine.IsMoveValid(moveList) == false)
                 {
-                    Console.WriteLine("Illegal move");
+                    Console.WriteLine("Illegal move!");
                     continue;
                 }
                 
