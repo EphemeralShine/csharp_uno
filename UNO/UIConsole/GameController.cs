@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text;
 using System.Text.RegularExpressions;
 using Domain;
 using UnoEngine;
@@ -24,28 +25,47 @@ public class GameController
         return Regex.IsMatch(input.Trim(), pattern);
     }
 
+    private void debug()
+    {
+        foreach (var player in _gameEngine.State.Players)
+        {
+            foreach (var card in player.PlayerHand)
+            {
+                Console.WriteLine($"{player} {card}");  
+            }
+        }
+        Console.WriteLine($"active{_gameEngine.State.ActivePlayerNo}");
+        Console.WriteLine(_gameEngine.State.ClockwiseMoveOrder);
+        Console.WriteLine(_gameEngine.State.CurrentColor);
+        Console.WriteLine(_gameEngine.State.Players.Count);
+        /*foreach (var card in _gameEngine.State.CardsNotInPlay)
+        {
+         Console.WriteLine(card.ToString());
+        }
+        Console.WriteLine(_gameEngine.State.CardsNotInPlay.Count);*/
+    }
+
     public void GameLoop()
     {
+        Console.OutputEncoding = Encoding.Unicode;
         Console.Clear();
         //1.Show first card to beat
         Console.WriteLine($"Starting card is: {_gameEngine.State.CardToBeat}");
-        //2.Perform actions tied with it
-
-        _gameEngine.CardsAction(_gameEngine.State.CardToBeat!);
         while (_gameEngine.IsGameOver() == false)//game over loop
         {
             //Empty Movelist
             List<GameCard> moveList = new();
             //Ask player if he is ready to see his deck
+            /*Console.Clear();*/
             Console.WriteLine($"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
             Console.Write("Your turn, make sure you are alone looking at screen! Press enter to continue...");
             Console.ReadLine();
             
             while (true)//player move loop
             {
+                debug();
                 while (true)//loop to check if player has cards to play
                 {
-                    Console.Clear();
                     //2.Show player deck
                     Console.WriteLine(
                         $"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
@@ -96,6 +116,7 @@ public class GameController
                 if (_gameEngine.IsMoveValid(moveList) == false)
                 {
                     Console.WriteLine("Illegal move!");
+                    moveList.Clear();
                     continue;
                 }
                 

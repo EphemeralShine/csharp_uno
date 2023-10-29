@@ -10,37 +10,45 @@ public class GameEngine
     private Random Rnd { get; set; } = new Random();
     public GameState State { get; set; } = new GameState();
     
-    private void InitializeGameStartingState()
+    public void InitializeGameStartingState()
     {
         var playingCards = new List<GameCard>();
         for (int cardValue = 1; cardValue < (int)ECardValue.Add4; cardValue++)
         {
             for (int cardColor = 0; cardColor < (int)ECardColor.Black; cardColor++)
             {
-                playingCards.Add(new GameCard()
+                for (int i = 0; i < 2; i++)
                 {
-                    CardValue = (ECardValue)cardValue,
-                    CardColor = (ECardColor)cardColor,
-                });
-                playingCards.Add(new GameCard()
-                {
-                    CardValue = (ECardValue)cardValue,
-                    CardColor = (ECardColor)cardColor,
-                });
+                    playingCards.Add(new GameCard()
+                    {
+                        CardValue = (ECardValue)cardValue,
+                        CardColor = (ECardColor)cardColor,
+                    });
+                }
+
+            } 
+        }
+
+        for (int cardColor = 0; cardColor < (int)ECardColor.Black; cardColor++)
+        {
                 playingCards.Add(new GameCard()
                 {
                     CardValue = ECardValue.Value0,
                     CardColor = (ECardColor)cardColor,
                 });
-            }
         }
+    
+
         for (int cardValue = (int)ECardValue.Add4; cardValue < (int)ECardValue.Blank; cardValue++)
         {
-            playingCards.Add(new GameCard()
+            for (int i = 0; i < 4; i++)
             {
-                CardValue = (ECardValue)cardValue,
-                CardColor = ECardColor.Black
-            });
+                playingCards.Add(new GameCard()
+                {
+                    CardValue = (ECardValue)cardValue,
+                    CardColor = ECardColor.Black
+                });
+            }
         }
         
         while (playingCards.Count > 0)
@@ -71,7 +79,6 @@ public class GameEngine
                 break;
             }
         }
-
         State.CurrentColor = State.CardToBeat.CardColor;
         State.ActivePlayerNo = 0; //TODO: how to choose a starter
     }
@@ -159,20 +166,20 @@ public class GameEngine
             do
             {
                 nextPlayerNo++;
-                if (nextPlayerNo > State.Players.Count)
+                if (nextPlayerNo > State.Players.Count - 1)
                 {
                     nextPlayerNo = 0;
                 }
             }while(State.Players[nextPlayerNo].PlayerHand.Count == 0);
         }
-        else
+        if(State.ClockwiseMoveOrder == false)
         {
             do
             {
                 nextPlayerNo--;
                 if (nextPlayerNo < 0)
                 {
-                    nextPlayerNo = State.Players.Count;
+                    nextPlayerNo = State.Players.Count - 1;
                 }
             }while(State.Players[nextPlayerNo].PlayerHand.Count == 0);
             
@@ -210,6 +217,10 @@ public class GameEngine
     {
         foreach (var card in State.Players[State.ActivePlayerNo].PlayerHand)
         {
+            if (card.CardColor == ECardColor.Black)
+            {
+                return true;
+            }
             if (card.CardValue == State.CardToBeat!.CardValue || card.CardColor == State.CurrentColor)
             {
                 return true;
