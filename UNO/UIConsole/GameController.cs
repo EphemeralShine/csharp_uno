@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Domain;
 using UnoEngine;
 
 namespace UIConsole;
@@ -16,8 +17,12 @@ public class GameController
     {
         while (_gameEngine.IsGameOver() == false)
         {
+            List<GameCard> bufferList = new();
             //1.Show card to beat
+            Console.WriteLine("Card to beat" + _gameEngine.State.CardToBeat);
             //2.Perform actions tied with it
+
+            _gameEngine.CardsAction(_gameEngine.State.CardToBeat);
             //3.Update active player
             //4.Show player deck, ask for card input
             //5.Validate input, go back to step 3 until right input
@@ -26,8 +31,7 @@ public class GameController
             //8.Update player deck
             //9.Move beaten card to queue CardsNotInPlay (maybe implement buffer, so can undo the move)
             //10.Update card to beat
-
-            //TODO: What to do when user plays with 2 or more cards?
+            
         }
     }
 }

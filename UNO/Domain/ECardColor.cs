@@ -6,5 +6,6 @@ public enum ECardColor
     Blue,
     Green,
     Yellow,
-    Black
+    Black,
+    None
 }
