@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Data;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using Domain;
 
 namespace UnoEngine;
@@ -7,11 +9,6 @@ public class GameEngine
 {
     private Random Rnd { get; set; } = new Random();
     public GameState State { get; set; } = new GameState();
-
-    public GameEngine()
-    {
-        InitializeGameStartingState();
-    }
     
     private void InitializeGameStartingState()
     {
@@ -61,7 +58,20 @@ public class GameEngine
                 player.PlayerHand.Add(State.CardsNotInPlay.Dequeue());
             }
         }
-        State.CardToBeat = State.CardsNotInPlay.Dequeue();
+
+        while (true)
+        {
+            State.CardToBeat = State.CardsNotInPlay.Dequeue();
+            if (State.CardToBeat.CardColor == ECardColor.Black)
+            {
+                State.CardsNotInPlay.Enqueue(State.CardToBeat);
+            }
+            else
+            { 
+                break;
+            }
+        }
+
         State.CurrentColor = State.CardToBeat.CardColor;
         State.ActivePlayerNo = 0; //TODO: how to choose a starter
     }
@@ -70,8 +80,6 @@ public class GameEngine
     {
         switch (cards.Count)
         {
-            case 0:
-                return true;
             case 1 when cards[0].CardColor == ECardColor.Black:
                 return true;
             case 1:
@@ -104,65 +112,117 @@ public class GameEngine
         return count <= 1;
     }
 
-    public void CardsAction(List<GameCard> cards, ECardColor colorChange = ECardColor.None)
+    public void CardsAction(GameCard card, ECardColor colorChange = ECardColor.None)
     {
-        var count = cards.Count;
-        if (cards[0].CardValue == ECardValue.Add2)
+        if (card.CardValue == ECardValue.Add2)
         {
-            for (int i = 0; i < count; i++)
-            {
                 for (int j = 0; j < 2; j++)
                 {
-                    State.Players[State.ActivePlayerNo + 1].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
-                }//TODO: next player fix
-            }
+                    State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                }
         }
 
-        if (cards[0].CardValue == ECardValue.Add4)
+        if (card.CardValue == ECardValue.Add4)
         {
-            for (int i = 0; i < count; i++)
-            {
                 for (int j = 0; j < 4; j++)
                 {
-                    State.Players[State.ActivePlayerNo + 1].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
-                }//TODO: next player fix
-            }
+                    State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                }
 
-            if (colorChange != ECardColor.None)
-            {
-                State.CurrentColor = colorChange;
-            }
+                if (colorChange != ECardColor.None)
+                {
+                    State.CurrentColor = colorChange;
+                }
         }
 
-        if (cards[0].CardValue == ECardValue.Reverse)
+        if (card.CardValue == ECardValue.Reverse)
         {
-            for (int i = 0; i < count; i++)
-            {
                 State.ClockwiseMoveOrder = !State.ClockwiseMoveOrder;
-            }
         }
         
-        if (cards[0].CardValue == ECardValue.Skip)
+        if (card.CardValue == ECardValue.Skip)
         {
-            for (int i = 0; i < count; i++)
-            {
-                State.ActivePlayerNo += 1;
-                //TODO: next player fix
-            }
+            State.ActivePlayerNo = GetNextPlayerNo();
         }
         
-        if (cards[0].CardValue == ECardValue.ChangeColor && colorChange != ECardColor.None)
+        if (card.CardValue == ECardValue.ChangeColor && colorChange != ECardColor.None)
         {
             State.CurrentColor = colorChange;
         }
     }
-    
-    public void UpdateState()
+
+    private int GetNextPlayerNo()
     {
-        throw new NotImplementedException();
+        int nextPlayerNo = State.ActivePlayerNo;
+        if (State.ClockwiseMoveOrder)
+        {
+            do
+            {
+                nextPlayerNo++;
+                if (nextPlayerNo > State.Players.Count)
+                {
+                    nextPlayerNo = 0;
+                }
+            }while(State.Players[nextPlayerNo].PlayerHand.Count == 0);
+        }
+        else
+        {
+            do
+            {
+                nextPlayerNo--;
+                if (nextPlayerNo < 0)
+                {
+                    nextPlayerNo = State.Players.Count;
+                }
+            }while(State.Players[nextPlayerNo].PlayerHand.Count == 0);
+            
+        }
+        return nextPlayerNo;
     }
-    public void ElectNextPlayer()
+    public void UpdatePlayerHand(List<GameCard> cards)
     {
-        throw new NotImplementedException();
+        foreach(var card in cards)
+        {
+            State.Players[State.ActivePlayerNo].PlayerHand.Remove(card);
+        }
+    }
+
+    public void UpdateCardToBeat(List<GameCard> cards)
+    {
+        State.CardsNotInPlay.Enqueue(State.CardToBeat!);
+        for (int card = 1; card < cards.Count; card++)
+        {
+            State.CardsNotInPlay.Enqueue(cards[card]);
+        }
+        State.CardToBeat = cards[0];
+        if (State.CardToBeat.CardColor != ECardColor.Black)
+        {
+            State.CurrentColor = State.CardToBeat.CardColor;
+        }
+    }
+
+    public void UpdateActivePlayerNo()
+    {
+        State.ActivePlayerNo = GetNextPlayerNo();
+    }
+
+    public bool IsPlayerAbleToMove()
+    {
+        foreach (var card in State.Players[State.ActivePlayerNo].PlayerHand)
+        {
+            if (card.CardValue == State.CardToBeat!.CardValue || card.CardColor == State.CurrentColor)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void Add2CardsToPlayer()
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            State.Players[State.ActivePlayerNo].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+        }
     }
 }

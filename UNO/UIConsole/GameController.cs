@@ -15,22 +15,73 @@ public class GameController
 
     public void GameLoop()
     {
-        while (_gameEngine.IsGameOver() == false)
-        {
-            List<GameCard> bufferList = new();
-            //1.Show card to beat
-            Console.WriteLine("Card to beat" + _gameEngine.State.CardToBeat);
-            //2.Perform actions tied with it
+        Console.Clear();
+        //1.Show first card to beat
+        Console.WriteLine($"Starting card is: {_gameEngine.State.CardToBeat}");
+        //2.Perform actions tied with it
 
-            _gameEngine.CardsAction(_gameEngine.State.CardToBeat);
-            //3.Update active player
-            //4.Show player deck, ask for card input
-            //5.Validate input, go back to step 3 until right input
-            //6.If no input, add 2 cards to player, go back to step 3 
-            //7.Validate move legality, illegal move - go back to step 3
-            //8.Update player deck
-            //9.Move beaten card to queue CardsNotInPlay (maybe implement buffer, so can undo the move)
-            //10.Update card to beat
+        _gameEngine.CardsAction(_gameEngine.State.CardToBeat!);
+        while (_gameEngine.IsGameOver() == false)//game over loop
+        {
+            //Empty Movelist
+            List<GameCard> moveList = new();
+            //Ask player if he is ready to see his deck
+            Console.WriteLine($"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
+            Console.Write("Your turn, make sure you are alone looking at screen! Press enter to continue...");
+            Console.ReadLine();
+            
+            while (true)//player move loop
+            {
+                while (true)//loop to check if player has cards to play
+                {
+                    Console.Clear();
+                    //2.Show player deck
+                    Console.WriteLine(
+                        $"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
+                    ConsoleVisualization.DrawDesk(_gameEngine.State);
+                    ConsoleVisualization.DrawPlayerHand(_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo]);
+                    //If no cards to play, inform player and wait for input to add 2 card to player hand and get back to step 2
+                    if (_gameEngine.IsPlayerAbleToMove() == false)
+                    {
+                        Console.WriteLine("No suitable cards in your Deck! Adding 2");
+                        _gameEngine.Add2CardsToPlayer();
+                        Console.WriteLine("Press enter to proceed...");
+                        Console.ReadLine();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                //Ask for card input
+                Console.Write(
+                    $"Choose card(s) to play (first input card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:");
+                var playerChoiceStr = Console.ReadLine()?.Trim();
+                //Validate input
+                //TODO: implement
+                //Add cards to moveList
+                //TODO: implement
+                //Validate move legality
+                if (_gameEngine.IsMoveValid(moveList) == false)
+                {
+                    Console.WriteLine("Illegal move");
+                    continue;
+                }
+                
+                //Update player deck
+                _gameEngine.UpdatePlayerHand(moveList);
+                //Perform card actions
+                foreach (var card in moveList)
+                {
+                    _gameEngine.CardsAction(card);
+                }
+                //Update card to beat, move the old one and other cards in move to q 
+                _gameEngine.UpdateCardToBeat(moveList);
+                //Update player
+                _gameEngine.UpdateActivePlayerNo();
+                break;
+            }
             
         }
     }
