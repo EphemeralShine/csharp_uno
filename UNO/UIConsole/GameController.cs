@@ -15,36 +15,15 @@ public class GameController
         _gameEngine = gameEngine;
     }
 
-    private bool ValidateInput(string? input)
+    private bool ValidateInput(string? input, string pattern)
     {
         if (string.IsNullOrEmpty(input))
         {
             return false;
         }
-        string pattern = "^[0-9,]+$";
         return Regex.IsMatch(input.Trim(), pattern);
     }
-
-    private void debug()
-    {
-        foreach (var player in _gameEngine.State.Players)
-        {
-            foreach (var card in player.PlayerHand)
-            {
-                Console.WriteLine($"{player} {card}");  
-            }
-        }
-        Console.WriteLine($"active{_gameEngine.State.ActivePlayerNo}");
-        Console.WriteLine(_gameEngine.State.ClockwiseMoveOrder);
-        Console.WriteLine(_gameEngine.State.CurrentColor);
-        Console.WriteLine(_gameEngine.State.Players.Count);
-        /*foreach (var card in _gameEngine.State.CardsNotInPlay)
-        {
-         Console.WriteLine(card.ToString());
-        }
-        Console.WriteLine(_gameEngine.State.CardsNotInPlay.Count);*/
-    }
-
+    
     public void GameLoop()
     {
         Console.OutputEncoding = Encoding.Unicode;
@@ -56,14 +35,13 @@ public class GameController
             //Empty Movelist
             List<GameCard> moveList = new();
             //Ask player if he is ready to see his deck
-            /*Console.Clear();*/
+            Console.Clear();
             Console.WriteLine($"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
             Console.Write("Your turn, make sure you are alone looking at screen! Press enter to continue...");
             Console.ReadLine();
             
             while (true)//player move loop
             {
-                debug();
                 while (true)//loop to check if player has cards to play
                 {
                     //2.Show player deck
@@ -89,12 +67,12 @@ public class GameController
                 while (true)//Input validation loop
                 {
                     Console.Write(
-                        $"Choose card(s) to play (first input card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:");
+                        $"Choose card(s) to play (first card beating current card to beat, last card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:");
                     playerChoiceStr = Console.ReadLine();
                     //Validate input
-                    if (ValidateInput(playerChoiceStr) == false)
+                    if (ValidateInput(playerChoiceStr, "^[0-9,]+$") == false)
                     {
-                        Console.WriteLine("Wrong input style (correct input: 1,2,3)");
+                        Console.WriteLine("Wrong input style (correct input style: 1,2,3)");
                     }
                     else
                     {
@@ -123,10 +101,43 @@ public class GameController
                 //Update player deck
                 _gameEngine.UpdatePlayerHand(moveList);
                 //Perform card actions
-                foreach (var card in moveList)
+                if (moveList[0].CardColor == ECardColor.Black)
                 {
-                    _gameEngine.CardsAction(card);
+                    ECardColor playerColorChange = ECardColor.None;
+                    while(true){
+                        Console.WriteLine($"Choose next color 1-4: 1)🔴, 2)🔵, 3)🟢, 4)🟡");
+                        var playerColorStr = Console.ReadLine()?.Trim();
+                        //Validate input
+                        if (ValidateInput(playerColorStr, "^(1|2|3|4)$") == false)
+                        {
+                            Console.WriteLine("Wrong input style (correct input style: 1)");
+                        }
+                        else
+                        {
+                            playerColorChange = playerColorStr switch
+                            {
+                                "1" => ECardColor.Red,
+                                "2" => ECardColor.Blue,
+                                "3" => ECardColor.Green,
+                                "4" => ECardColor.Yellow,
+                                _ => playerColorChange
+                            };
+                            foreach (var card in moveList)
+                            {
+                                _gameEngine.CardsAction(card, playerColorChange);
+                            }
+                            break;
+                        }
+                    }
                 }
+                else
+                {
+                    foreach (var card in moveList)
+                    {
+                        _gameEngine.CardsAction(card);
+                    }
+                }
+
                 //Update card to beat, move the old one and other cards in move to q 
                 _gameEngine.UpdateCardToBeat(moveList);
                 //Update player
@@ -134,6 +145,13 @@ public class GameController
                 break;
             }
             
+        }
+        Console.Clear();
+        Console.WriteLine("<<<>>> GAME OVER <<<>>> GAME OVER <<<>>> GAME OVER <<<>>>");
+        var loser = _gameEngine.DetermineLoser();
+        if (loser != null)
+        {
+            Console.WriteLine($"The loser is: {loser.Name}");
         }
     }
 }

@@ -9,7 +9,7 @@ public class GameEngine
 {
     private Random Rnd { get; set; } = new Random();
     public GameState State { get; set; } = new GameState();
-    
+
     public void InitializeGameStartingState()
     {
         var playingCards = new List<GameCard>();
@@ -26,18 +26,18 @@ public class GameEngine
                     });
                 }
 
-            } 
+            }
         }
 
         for (int cardColor = 0; cardColor < (int)ECardColor.Black; cardColor++)
         {
-                playingCards.Add(new GameCard()
-                {
-                    CardValue = ECardValue.Value0,
-                    CardColor = (ECardColor)cardColor,
-                });
+            playingCards.Add(new GameCard()
+            {
+                CardValue = ECardValue.Value0,
+                CardColor = (ECardColor)cardColor,
+            });
         }
-    
+
 
         for (int cardValue = (int)ECardValue.Add4; cardValue < (int)ECardValue.Blank; cardValue++)
         {
@@ -50,14 +50,14 @@ public class GameEngine
                 });
             }
         }
-        
+
         while (playingCards.Count > 0)
         {
             var randomPositionInDeck = Rnd.Next(playingCards.Count);
             State.CardsNotInPlay.Enqueue(playingCards[randomPositionInDeck]);
             playingCards.RemoveAt(randomPositionInDeck);
         }
-        
+
 
         foreach (var player in State.Players)
         {
@@ -75,10 +75,11 @@ public class GameEngine
                 State.CardsNotInPlay.Enqueue(State.CardToBeat);
             }
             else
-            { 
+            {
                 break;
             }
         }
+
         State.CurrentColor = State.CardToBeat.CardColor;
         State.ActivePlayerNo = 0; //TODO: how to choose a starter
     }
@@ -103,9 +104,10 @@ public class GameEngine
             case > 1:
                 return false;
         }
+
         return false;
     }
-    
+
     public bool IsGameOver()
     {
         var count = 0;
@@ -116,6 +118,7 @@ public class GameEngine
                 count += 1;
             }
         }
+
         return count <= 1;
     }
 
@@ -123,35 +126,35 @@ public class GameEngine
     {
         if (card.CardValue == ECardValue.Add2)
         {
-                for (int j = 0; j < 2; j++)
-                {
-                    State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
-                }
+            for (int j = 0; j < 2; j++)
+            {
+                State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+            }
         }
 
         if (card.CardValue == ECardValue.Add4)
         {
-                for (int j = 0; j < 4; j++)
-                {
-                    State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
-                }
+            for (int j = 0; j < 4; j++)
+            {
+                State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+            }
 
-                if (colorChange != ECardColor.None)
-                {
-                    State.CurrentColor = colorChange;
-                }
+            if (colorChange != ECardColor.None)
+            {
+                State.CurrentColor = colorChange;
+            }
         }
 
         if (card.CardValue == ECardValue.Reverse)
         {
-                State.ClockwiseMoveOrder = !State.ClockwiseMoveOrder;
+            State.ClockwiseMoveOrder = !State.ClockwiseMoveOrder;
         }
-        
+
         if (card.CardValue == ECardValue.Skip)
         {
             State.ActivePlayerNo = GetNextPlayerNo();
         }
-        
+
         if (card.CardValue == ECardValue.ChangeColor && colorChange != ECardColor.None)
         {
             State.CurrentColor = colorChange;
@@ -170,9 +173,10 @@ public class GameEngine
                 {
                     nextPlayerNo = 0;
                 }
-            }while(State.Players[nextPlayerNo].PlayerHand.Count == 0);
+            } while (State.Players[nextPlayerNo].PlayerHand.Count == 0);
         }
-        if(State.ClockwiseMoveOrder == false)
+
+        if (State.ClockwiseMoveOrder == false)
         {
             do
             {
@@ -181,14 +185,16 @@ public class GameEngine
                 {
                     nextPlayerNo = State.Players.Count - 1;
                 }
-            }while(State.Players[nextPlayerNo].PlayerHand.Count == 0);
-            
+            } while (State.Players[nextPlayerNo].PlayerHand.Count == 0);
+
         }
+
         return nextPlayerNo;
     }
+
     public void UpdatePlayerHand(List<GameCard> cards)
     {
-        foreach(var card in cards)
+        foreach (var card in cards)
         {
             State.Players[State.ActivePlayerNo].PlayerHand.Remove(card);
         }
@@ -197,11 +203,12 @@ public class GameEngine
     public void UpdateCardToBeat(List<GameCard> cards)
     {
         State.CardsNotInPlay.Enqueue(State.CardToBeat!);
-        for (int card = 1; card < cards.Count; card++)
+        for (int card = 0; card < cards.Count - 1; card++)
         {
             State.CardsNotInPlay.Enqueue(cards[card]);
         }
-        State.CardToBeat = cards[0];
+
+        State.CardToBeat = cards[^1];
         if (State.CardToBeat.CardColor != ECardColor.Black)
         {
             State.CurrentColor = State.CardToBeat.CardColor;
@@ -221,11 +228,13 @@ public class GameEngine
             {
                 return true;
             }
+
             if (card.CardValue == State.CardToBeat!.CardValue || card.CardColor == State.CurrentColor)
             {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -235,5 +244,17 @@ public class GameEngine
         {
             State.Players[State.ActivePlayerNo].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
         }
+    }
+
+    public Player? DetermineLoser()
+    {
+        foreach (var player in State.Players)
+        {
+            if (player.PlayerHand.Count > 0)
+            {
+                return player;
+            }
+        }
+        return null;
     }
 }
