@@ -27,7 +27,7 @@ public class GameController
         return Regex.IsMatch(input.Trim(), pattern);
     }
     
-    public void GameLoop()
+    public string GameLoop()
     {
         Console.OutputEncoding = Encoding.Unicode;
         Console.Clear();
@@ -45,7 +45,8 @@ public class GameController
             var key = Console.ReadKey();
             if (key.Key == ConsoleKey.X)
             {
-                return;
+                Console.WriteLine("\n");
+                return "x";
             }
             
             while (true)//player move loop
@@ -164,5 +165,7 @@ public class GameController
         }
         Console.WriteLine("Press enter to proceed:");
         Console.ReadLine();
+        Console.WriteLine("\n");
+        return "x";
     }
 }

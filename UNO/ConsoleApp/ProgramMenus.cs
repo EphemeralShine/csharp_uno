@@ -23,21 +23,21 @@ public class ProgramMenus
         });*/
 
 
-    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod)
+    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod, EMenuLevel menuLevel = EMenuLevel.Sub1)
     {
         Menu menu = new Menu ("<<< ||U||N||O|| >>>", new List<MenuItem>()
         {
             new MenuItem()
             {
                 Hotkey = "s",
-                Label = "Start a new game: ",
+                Label = " Start a new game: ",
                 MenuLabelFunction = () => "Start a new game: "/* + rules*/,
                 MethodToRun = newGameMethod
             },
             new MenuItem()
             {
                 Hotkey = "l",
-                Label = "Load game",
+                Label = " Load game",
                 MethodToRun = loadGameMethod
             },/*
             new MenuItem()
@@ -46,7 +46,8 @@ public class ProgramMenus
                 Label = "Options",
                 MethodToRun = optionsMenu.Run
             },*/
-        });
+        }, menuLevel);
         return menu;
     }
 }
+

@@ -79,17 +79,17 @@ public class Menu
                     if (MenuItems[userChoice].MethodToRun != null)
                     {
                         var result = MenuItems[userChoice].MethodToRun!();
-                        if (result!.ToLower() == "x")
+                        if (result != null && result.ToLower() == "x")
                         {
                             userChoice = result;
                         }
 
-                        if (result.ToLower() == "b")
+                        if (result != null && result.ToLower() == "b")
                         {
                             Console.Clear();
                         }
 
-                        if (result.ToLower() == "r" && MenuLevel != EMenuLevel.Main)
+                        if (result != null && result.ToLower() == "r" && MenuLevel != EMenuLevel.Main)
                         {
                             Console.Clear();
                             userChoice = result;

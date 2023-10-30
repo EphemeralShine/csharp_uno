@@ -7,7 +7,7 @@ namespace DAL;
 
 public class GameRepositoryFileSystem : IGameRepository
 {
-    private const string SaveLocation = "/Users/fetis/csharp/UNO/saves";   
+    private string SaveLocation = string.Join(Path.GetTempPath(), $"{Path.DirectorySeparatorChar}uno");
     
     public void Save(Guid id, GameState state)
     {
@@ -15,7 +15,7 @@ public class GameRepositoryFileSystem : IGameRepository
 
         var fileName = Path.ChangeExtension(id.ToString(), ".json");
 
-        if (!Path.Exists(SaveLocation))
+        if (!Directory.Exists(SaveLocation))
         {
             Directory.CreateDirectory(SaveLocation);
         }
