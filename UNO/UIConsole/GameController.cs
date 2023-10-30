@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
+using DAL;
 using Domain;
 using UnoEngine;
 
@@ -9,10 +10,12 @@ namespace UIConsole;
 public class GameController
 {
     private readonly GameEngine _gameEngine;
+    private readonly IGameRepository _repository;
     
-    public GameController(GameEngine gameEngine)
+    public GameController(GameEngine gameEngine, IGameRepository repo)
     {
         _gameEngine = gameEngine;
+        _repository = repo;
     }
 
     private bool ValidateInput(string? input, string pattern)
@@ -36,9 +39,14 @@ public class GameController
             List<GameCard> moveList = new();
             //Ask player if he is ready to see his deck
             Console.Clear();
+            Console.WriteLine($"Game progress is saved after each move automatically. Press 'x' to go back to main menu");
             Console.WriteLine($"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
-            Console.Write("Your turn, make sure you are alone looking at screen! Press enter to continue...");
-            Console.ReadLine();
+            Console.Write("Your turn, make sure you are alone looking at screen! Press any button to continue...");
+            var key = Console.ReadKey();
+            if (key.Key == ConsoleKey.X)
+            {
+                return;
+            }
             
             while (true)//player move loop
             {
@@ -55,7 +63,7 @@ public class GameController
                         Console.WriteLine("No suitable cards in your Deck! Adding 2");
                         _gameEngine.Add2CardsToPlayer();
                         Console.WriteLine("Press enter to proceed...");
-                        Console.ReadLine();
+                        Console.ReadKey();
                     }
                     else
                     {
@@ -142,6 +150,7 @@ public class GameController
                 _gameEngine.UpdateCardToBeat(moveList);
                 //Update player
                 _gameEngine.UpdateActivePlayerNo();
+                _repository.Save(_gameEngine.State.Id, _gameEngine.State);
                 break;
             }
             
@@ -153,5 +162,7 @@ public class GameController
         {
             Console.WriteLine($"The loser is: {loser.Name}");
         }
+        Console.WriteLine("Press enter to proceed:");
+        Console.ReadLine();
     }
 }

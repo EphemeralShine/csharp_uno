@@ -1,13 +1,16 @@
 ﻿using ConsoleApp;
+using DAL;
 using Domain;
 using MenuSystem;
 using UIConsole;
 using UnoEngine;
 
 var rules = new Rules();
+IGameRepository gameRepository = new GameRepositoryFileSystem();
 
 var mainMenu = ProgramMenus.GetMainMenu(
-    NewGame
+    NewGame,
+    LoadGame
 );
 
 mainMenu.Run();
@@ -18,12 +21,12 @@ string? NewGame()
     var gameEngine = new GameEngine();
     PlayerSetup.ConfigurePlayers(gameEngine);
     gameEngine.InitializeGameStartingState();
-    var gameController = new GameController(gameEngine);
+    var gameController = new GameController(gameEngine, gameRepository);
     gameController.GameLoop();
     return null;
 }
 
-/*string? LoadGame()
+string? LoadGame()
 {
     Console.WriteLine("Saved games");
     var saveGameList = gameRepository.GetSaveGames();
@@ -57,17 +60,17 @@ string? NewGame()
 
     var gameState = gameRepository.LoadGame(gameId);
 
-    var gameEngine = new DurakGameEngine(gameOptions)
+    var gameEngine = new GameEngine()
     {
         State = gameState
     };
     
     var gameController = new GameController(gameEngine, gameRepository);
 
-    gameController.Run();
+    gameController.GameLoop();
 
     return null;
-}*/
+}
 
 
 

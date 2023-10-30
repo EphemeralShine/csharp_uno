@@ -6,5 +6,5 @@ public class MenuItem
     public Func<string>? MenuLabelFunction { get; set; }
     public string Hotkey { get; set; } = default!;
 
-    public Func<string>? MethodToRun { get; set; } = null;
+    public Func<string?>? MethodToRun { get; set; } = null;
 }

@@ -23,7 +23,7 @@ public class ProgramMenus
         });*/
 
 
-    public static Menu GetMainMenu(Func<string?> newGameMethod)
+    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod)
     {
         Menu menu = new Menu ("<<< ||U||N||O|| >>>", new List<MenuItem>()
         {
@@ -34,12 +34,12 @@ public class ProgramMenus
                 MenuLabelFunction = () => "Start a new game: "/* + rules*/,
                 MethodToRun = newGameMethod
             },
-            /*new MenuItem()
+            new MenuItem()
             {
                 Hotkey = "l",
                 Label = "Load game",
                 MethodToRun = loadGameMethod
-            },
+            },/*
             new MenuItem()
             {
                 Hotkey = "o",

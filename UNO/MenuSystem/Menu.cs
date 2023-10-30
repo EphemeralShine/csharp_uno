@@ -79,7 +79,7 @@ public class Menu
                     if (MenuItems[userChoice].MethodToRun != null)
                     {
                         var result = MenuItems[userChoice].MethodToRun!();
-                        if (result.ToLower() == "x")
+                        if (result!.ToLower() == "x")
                         {
                             userChoice = result;
                         }
