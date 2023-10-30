@@ -7,7 +7,7 @@ namespace DAL;
 
 public class GameRepositoryFileSystem : IGameRepository
 {
-    private string SaveLocation = string.Join(Path.GetTempPath(), $"{Path.DirectorySeparatorChar}uno");
+    private string SaveLocation = Path.Combine(Path.GetTempPath(), "uno");
     
     public void Save(Guid id, GameState state)
     {
