@@ -2,12 +2,29 @@
 using DAL;
 using Domain;
 using MenuSystem;
+using Microsoft.EntityFrameworkCore;
 using UIConsole;
 using UnoEngine;
 
 var rules = new Rules();
-IGameRepository gameRepository = new GameRepositoryFileSystem();
+// ================== SAVES =====================
+// IGameRepository gameRepository = new GameRepositoryFileSystem();
+var connectionString = "DataSource=<%temppath%>durak.db;Cache=Shared";
+connectionString = connectionString.Replace("<%temppath%>", Path.GetTempPath());
 
+
+var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
+    .UseSqlite(connectionString)
+    .EnableDetailedErrors()
+    .EnableSensitiveDataLogging()
+    .Options;
+using var db = new AppDbContext(contextOptions);
+// apply all the migrations
+db.Database.Migrate();
+IGameRepository gameRepository = new GameRepositoryEF(db);
+
+
+// ================== GAME =====================
 var mainMenu = ProgramMenus.GetMainMenu(
     NewGame,
     LoadGame
