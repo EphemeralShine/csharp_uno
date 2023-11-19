@@ -16,15 +16,6 @@ public class GameController
         _gameEngine = gameEngine;
         _repository = repo;
     }
-
-    private bool ValidateInput(string? input, string pattern)
-    {
-        if (string.IsNullOrEmpty(input))
-        {
-            return false;
-        }
-        return Regex.IsMatch(input.Trim(), pattern);
-    }
     
     public string GameLoop()
     {
@@ -38,7 +29,7 @@ public class GameController
             List<GameCard> moveList = new();
             //Ask player if he is ready to see his deck
             Console.Clear();
-            Console.WriteLine($"Game progress is saved after each move automatically. Press 'x' to go back to main menu");
+            Console.WriteLine("Game progress is saved after each move automatically. Press 'x' to go back to main menu");
             Console.WriteLine($"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
             Console.Write("Your turn, make sure you are alone looking at screen! Press any button to continue...");
             var key = Console.ReadKey();
@@ -71,22 +62,8 @@ public class GameController
                     }
                 }
                 //Ask for card input
-                var playerChoiceStr = "";
-                while (true)//Input validation loop
-                {
-                    Console.Write(
-                        $"Choose card(s) to play (first card beating current card to beat, last card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:");
-                    playerChoiceStr = Console.ReadLine();
-                    //Validate input
-                    if (ValidateInput(playerChoiceStr, "^[0-9,]+$") == false)
-                    {
-                        Console.WriteLine("Wrong input style (correct input style: 1,2,3)");
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                var cardPromptString = $"Choose card(s) to play (first card beating current card to beat, last card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:)";
+                string playerChoiceStr = Prompts.Prompt<string>(cardPromptString, "^[0-9,]+$");
                 var playerChoices = playerChoiceStr!.Split(",").Select(s => int.Parse(s.Trim()));
                 //Add cards to moveList
                 foreach (var num in playerChoices)
@@ -112,30 +89,19 @@ public class GameController
                 if (moveList[0].CardColor == ECardColor.Black)
                 {
                     ECardColor playerColorChange = ECardColor.None;
-                    while(true){
-                        Console.WriteLine($"Choose next color 1-4: 1)🔴, 2)🔵, 3)🟢, 4)🟡");
-                        var playerColorStr = Console.ReadLine()?.Trim();
-                        //Validate input
-                        if (ValidateInput(playerColorStr, "^(1|2|3|4)$") == false)
-                        {
-                            Console.WriteLine("Wrong input style (correct input style: 1)");
-                        }
-                        else
-                        {
-                            playerColorChange = playerColorStr switch
-                            {
-                                "1" => ECardColor.Red,
-                                "2" => ECardColor.Blue,
-                                "3" => ECardColor.Green,
-                                "4" => ECardColor.Yellow,
-                                _ => playerColorChange
-                            };
-                            foreach (var card in moveList)
-                            {
-                                _gameEngine.CardsAction(card, playerColorChange);
-                            }
-                            break;
-                        }
+                    var playerColorStr = Prompts.Prompt<string>("Choose next color 1-4: 1)🔴, 2)🔵, 3)🟢, 4)🟡",
+                        "^(1|2|3|4)$");
+                    playerColorChange = playerColorStr switch
+                    {
+                        "1" => ECardColor.Red,
+                        "2" => ECardColor.Blue,
+                        "3" => ECardColor.Green, 
+                        "4" => ECardColor.Yellow,
+                        _ => playerColorChange
+                    };
+                    foreach (var card in moveList)
+                    {
+                        _gameEngine.CardsAction(card, playerColorChange);
                     }
                 }
                 else

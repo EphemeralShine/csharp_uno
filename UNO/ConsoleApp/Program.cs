@@ -56,25 +56,17 @@ string? LoadGame()
     while (true)
     {
         Console.WriteLine(string.Join("\n", saveGameListDisplay));
-        Console.Write($"Select game to load (1..{saveGameListDisplay.Count}):");
-        var userChoiceStr = Console.ReadLine();
-        if (int.TryParse(userChoiceStr, out var userChoice))
-        {
-            if (userChoice < 1 || userChoice > saveGameListDisplay.Count)
-            {
-                Console.WriteLine("Not in range...");
-                continue;
-            }
-
-            gameId = saveGameList[userChoice - 1].id;
-            Console.WriteLine($"Loading file: {gameId}");
-
-            break;
+        var prompt = $"Select game to load (1..{saveGameListDisplay.Count}):";
+        int userChoice = Prompts.Prompt<int>(prompt, "^([1-9]|[1-9][0-9]|99)$");
+        if (userChoice < 1 || userChoice > saveGameListDisplay.Count)
+        { 
+            Console.WriteLine("Not in range...");
+            continue;
         }
-
-        Console.WriteLine("Parse error...");
+        gameId = saveGameList[userChoice - 1].id;
+        Console.WriteLine($"Loading file: {gameId}");
+        break;
     }
-
 
     var gameState = gameRepository.LoadGame(gameId);
 
