@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using UIConsole;
 using UnoEngine;
 
-var rules = new Rules();
 // ================== SAVES =====================
 // IGameRepository gameRepository = new GameRepositoryFileSystem();
 var connectionString = "DataSource=<%temppath%>durak.db;Cache=Shared";

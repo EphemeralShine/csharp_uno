@@ -9,7 +9,7 @@ public class GameEngine
 {
     private Random Rnd { get; set; } = new Random();
     public GameState State { get; set; } = new GameState();
-
+    
     public void InitializeGameStartingState()
     {
         var playingCards = new List<GameCard>();
@@ -61,7 +61,7 @@ public class GameEngine
 
         foreach (var player in State.Players)
         {
-            for (int cardRandom = 0; cardRandom < 7; cardRandom++)
+            for (int cardRandom = 0; cardRandom < State.GameRules.HandSize; cardRandom++)
             {
                 player.PlayerHand.Add(State.CardsNotInPlay.Dequeue());
             }
@@ -86,6 +86,10 @@ public class GameEngine
 
     public bool IsMoveValid(List<GameCard> cards)
     {
+        if (!State.GameRules.MultipleCardMoves && cards.Count != 1)
+        {
+            return false;
+        }
         switch (cards.Count)
         {
             case 1 when cards[0].CardColor == ECardColor.Black:
@@ -249,9 +253,9 @@ public class GameEngine
         return false;
     }
 
-    public void Add2CardsToPlayer()
+    public void AddCardsToPlayer()
     {
-        for (int j = 0; j < 2; j++)
+        for (int j = 0; j < State.GameRules.CardAddition; j++)
         {
             State.Players[State.ActivePlayerNo].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
         }
@@ -267,5 +271,11 @@ public class GameEngine
             }
         }
         return null;
+    }
+
+    public int DetermineMaxPlayerCount()
+    {
+        var availableCards = 107;
+        return availableCards / State.GameRules.HandSize;
     }
 }

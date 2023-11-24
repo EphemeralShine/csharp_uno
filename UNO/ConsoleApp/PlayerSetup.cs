@@ -8,8 +8,10 @@ public static class PlayerSetup
 {
     public static void ConfigurePlayers(GameEngine gameEngine)
     {
+        var maxPlayers = gameEngine.DetermineMaxPlayerCount();
+        var playerCountRegex = $"^[1-{maxPlayers}]$";
         // get player amount
-        var playerCount = Prompts.PromptWithDefault("How many players (2 - 7):", "^[1-7]$", 2);
+        var playerCount = Prompts.PromptWithDefault($"How many players (2 - {maxPlayers}):", playerCountRegex, 2);
         
         // configure players
         for (int i = 0; i < playerCount; i++)

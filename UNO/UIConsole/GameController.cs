@@ -52,7 +52,7 @@ public class GameController
                     if (_gameEngine.IsPlayerAbleToMove() == false)
                     {
                         Console.WriteLine("No suitable cards in your Deck! Adding 2");
-                        _gameEngine.Add2CardsToPlayer();
+                        _gameEngine.AddCardsToPlayer();
                         Console.WriteLine("Press enter to proceed...");
                         Console.ReadKey();
                     }

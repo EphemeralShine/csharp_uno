@@ -1,4 +1,6 @@
-﻿namespace Domain;
+﻿using System.Data;
+
+namespace Domain;
 
 public class GameState
 {
@@ -10,4 +12,5 @@ public class GameState
     public ECardColor? CurrentColor { get; set; }
     public Queue<GameCard> CardsNotInPlay { get; set; } = new();
     
+    public Rules GameRules { get; set; } = new();
 }
