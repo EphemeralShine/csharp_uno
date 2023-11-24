@@ -1,0 +1,454 @@
+{
+  "id": "4854b1f0-6303-4fde-82b3-b96584f645ac",
+  "activePlayerNo": 0,
+  "clockwiseMoveOrder": true,
+  "players": [
+    {
+      "name": "a1",
+      "playerType": 1,
+      "playerHand": [
+        {
+          "cardColor": 0,
+          "cardValue": 4
+        },
+        {
+          "cardColor": 3,
+          "cardValue": 8
+        },
+        {
+          "cardColor": 2,
+          "cardValue": 0
+        },
+        {
+          "cardColor": 2,
+          "cardValue": 3
+        },
+        {
+          "cardColor": 2,
+          "cardValue": 11
+        },
+        {
+          "cardColor": 3,
+          "cardValue": 11
+        }
+      ]
+    },
+    {
+      "name": "a2",
+      "playerType": 1,
+      "playerHand": [
+        {
+          "cardColor": 0,
+          "cardValue": 3
+        },
+        {
+          "cardColor": 0,
+          "cardValue": 1
+        },
+        {
+          "cardColor": 0,
+          "cardValue": 6
+        },
+        {
+          "cardColor": 0,
+          "cardValue": 11
+        },
+        {
+          "cardColor": 2,
+          "cardValue": 11
+        },
+        {
+          "cardColor": 2,
+          "cardValue": 9
+        }
+      ]
+    }
+  ],
+  "cardToBeat": {
+    "cardColor": 3,
+    "cardValue": 8
+  },
+  "currentColor": 3,
+  "cardsNotInPlay": [
+    {
+      "cardColor": 3,
+      "cardValue": 6
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 8
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 12
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 11
+    },
+    {
+      "cardColor": 4,
+      "cardValue": 14
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 6
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 7
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 3
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 2
+    },
+    {
+      "cardColor": 4,
+      "cardValue": 14
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 10
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 1
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 4
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 10
+    },
+    {
+      "cardColor": 4,
+      "cardValue": 14
+    },
+    {
+      "cardColor": 4,
+      "cardValue": 14
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 1
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 3
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 9
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 12
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 6
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 0
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 11
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 7
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 5
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 7
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 3
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 5
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 12
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 6
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 9
+    },
+    {
+      "cardColor": 4,
+      "cardValue": 13
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 0
+    },
+    {
+      "cardColor": 4,
+      "cardValue": 13
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 6
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 10
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 9
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 10
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 10
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 1
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 9
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 7
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 9
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 1
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 11
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 7
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 2
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 12
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 5
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 4
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 7
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 2
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 5
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 5
+    },
+    {
+      "cardColor": 4,
+      "cardValue": 13
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 8
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 5
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 4
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 5
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 10
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 12
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 12
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 7
+    },
+    {
+      "cardColor": 4,
+      "cardValue": 13
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 1
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 2
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 5
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 3
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 9
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 8
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 7
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 6
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 8
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 6
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 8
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 0
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 10
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 11
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 3
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 12
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 8
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 1
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 1
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 4
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 2
+    },
+    {
+      "cardColor": 1,
+      "cardValue": 4
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 4
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 10
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 9
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 4
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 12
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 2
+    },
+    {
+      "cardColor": 2,
+      "cardValue": 3
+    },
+    {
+      "cardColor": 0,
+      "cardValue": 2
+    },
+    {
+      "cardColor": 3,
+      "cardValue": 2
+    }
+  ]
+}

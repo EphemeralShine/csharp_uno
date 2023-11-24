@@ -99,17 +99,11 @@ public class GameController
                         "4" => ECardColor.Yellow,
                         _ => playerColorChange
                     };
-                    foreach (var card in moveList)
-                    {
-                        _gameEngine.CardsAction(card, playerColorChange);
-                    }
+                    _gameEngine.CardsAction(moveList, playerColorChange); 
                 }
                 else
                 {
-                    foreach (var card in moveList)
-                    {
-                        _gameEngine.CardsAction(card);
-                    }
+                        _gameEngine.CardsAction(moveList);
                 }
 
                 //Update card to beat, move the old one and other cards in move to q 

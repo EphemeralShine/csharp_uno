@@ -16,7 +16,7 @@ public class GameEngine
         for (int cardValue = 1; cardValue < (int)ECardValue.Add4; cardValue++)
         {
             for (int cardColor = 0; cardColor < (int)ECardColor.Black; cardColor++)
-            {
+            { 
                 for (int i = 0; i < 2; i++)
                 {
                     playingCards.Add(new GameCard()
@@ -122,42 +122,53 @@ public class GameEngine
         return count <= 1;
     }
 
-    public void CardsAction(GameCard card, ECardColor colorChange = ECardColor.None)
+    public void CardsAction(List<GameCard> cards, ECardColor colorChange = ECardColor.None)
     {
-        if (card.CardValue == ECardValue.Add2)
-        {
-            for (int j = 0; j < 2; j++)
+        if (cards[0].CardValue == ECardValue.Skip)
+        { 
+            int selfSkipCount = cards.Count / State.Players.Count;
+            foreach (var card in cards)
             {
-                State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                State.ActivePlayerNo = GetNextPlayerNo();
             }
+            for (int i = 0; i < selfSkipCount; i++)
+            {
+                State.ActivePlayerNo = GetNextPlayerNo(); 
+            }
+            return;
         }
-
-        if (card.CardValue == ECardValue.Add4)
+        foreach (var card in cards)
         {
-            for (int j = 0; j < 4; j++)
+            if (card.CardValue == ECardValue.Add2)
             {
-                State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                for (int j = 0; j < 2; j++)
+                {
+                    State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                }
             }
 
-            if (colorChange != ECardColor.None)
+            if (card.CardValue == ECardValue.Add4)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    State.Players[GetNextPlayerNo()].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                }
+
+                if (colorChange != ECardColor.None)
+                {
+                    State.CurrentColor = colorChange;
+                }
+            }
+
+            if (card.CardValue == ECardValue.Reverse)
+            {
+                State.ClockwiseMoveOrder = !State.ClockwiseMoveOrder;
+            }
+
+            if (card.CardValue == ECardValue.ChangeColor && colorChange != ECardColor.None)
             {
                 State.CurrentColor = colorChange;
             }
-        }
-
-        if (card.CardValue == ECardValue.Reverse)
-        {
-            State.ClockwiseMoveOrder = !State.ClockwiseMoveOrder;
-        }
-
-        if (card.CardValue == ECardValue.Skip)
-        {
-            State.ActivePlayerNo = GetNextPlayerNo();
-        }
-
-        if (card.CardValue == ECardValue.ChangeColor && colorChange != ECardColor.None)
-        {
-            State.CurrentColor = colorChange;
         }
     }
 
@@ -245,7 +256,7 @@ public class GameEngine
             State.Players[State.ActivePlayerNo].PlayerHand.Add(State.CardsNotInPlay.Dequeue());
         }
     }
-
+    
     public Player? DetermineLoser()
     {
         foreach (var player in State.Players)
