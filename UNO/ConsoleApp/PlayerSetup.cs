@@ -9,7 +9,20 @@ public static class PlayerSetup
     public static void ConfigurePlayers(GameEngine gameEngine)
     {
         var maxPlayers = gameEngine.DetermineMaxPlayerCount();
-        var playerCountRegex = $"^[1-{maxPlayers}]$";
+        string playerCountRegex;
+        switch (maxPlayers)
+        {
+            case < 10:
+                playerCountRegex = $"^[2-9]$";
+                break;
+            case >= 10 and < 20:
+                playerCountRegex = $"^([2-9]|1[0-{maxPlayers - 10}])$";
+                break;
+            case >= 20:
+                playerCountRegex = $"^([2-9]|1[0-9]|2[0-{maxPlayers - 20}])$";
+                break;
+        }
+
         // get player amount
         var playerCount = Prompts.PromptWithDefault($"How many players (2 - {maxPlayers}):", playerCountRegex, 2);
         

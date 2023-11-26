@@ -25,6 +25,7 @@ public class GameController
         Console.WriteLine($"Starting card is: {_gameEngine.State.CardToBeat}");
         while (_gameEngine.IsGameOver() == false)//game over loop
         {
+            _gameEngine.Placings();
             //Empty Movelist
             List<GameCard> moveList = new();
             //Ask player if he is ready to see his deck
@@ -62,19 +63,33 @@ public class GameController
                     }
                 }
                 //Ask for card input
-                var cardPromptString = $"Choose card(s) to play (first card beating current card to beat, last card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:)";
-                string playerChoiceStr = Prompts.Prompt<string>(cardPromptString, "^[0-9,]+$");
-                var playerChoices = playerChoiceStr!.Split(",").Select(s => int.Parse(s.Trim()));
-                //Add cards to moveList
-                foreach (var num in playerChoices)
+                while (true)
                 {
-                    if (num > _gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count || num < 1)
+                    bool flag = false;
+                    var cardPromptString =
+                        $"Choose card(s) to play (first card beating current card to beat, last card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:)";
+                    string playerChoiceStr = Prompts.Prompt<string>(cardPromptString, "^[0-9,]+$");
+                    var playerChoices = playerChoiceStr!.Split(",").Select(s => int.Parse(s.Trim()));
+                    //Add cards to moveList
+                    foreach (var num in playerChoices)
                     {
-                        Console.WriteLine("No card with such index in your deck!");
+                        
+                        if (num > _gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count ||
+                            num < 1)
+                        {
+                            Console.WriteLine("No card with such index in your deck!");
+                            flag = true;
+                            break;
+                        }
+                        moveList.Add(_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand[num - 1]);
+                    }
+                    if (flag)
+                    {
                         continue;
                     }
-                    moveList.Add(_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand[num - 1]);
+                    break;
                 }
+
                 //Validate move legality
                 if (_gameEngine.IsMoveValid(moveList) == false)
                 {
@@ -117,11 +132,23 @@ public class GameController
         }
         Console.Clear();
         Console.WriteLine("<<<>>> GAME OVER <<<>>> GAME OVER <<<>>> GAME OVER <<<>>>");
-        var loser = _gameEngine.DetermineLoser();
+        if (_gameEngine.State.Placings.Count != 0)
+        {
+            Console.WriteLine($"The Winner is: {_gameEngine.State.Placings.Dequeue()}");
+        }
+        if (_gameEngine.State.Placings.Count > 1) 
+        {
+            Console.WriteLine($"2nd place: {_gameEngine.State.Placings.Dequeue()}");
+        }
+        if (_gameEngine.State.Placings.Count > 2) 
+        {
+            Console.WriteLine($"3rd place: {_gameEngine.State.Placings.Dequeue()}");
+        }
+        /*var loser = _gameEngine.DetermineLoser();
         if (loser != null)
         {
             Console.WriteLine($"The loser is: {loser.Name}");
-        }
+        }*/
         Console.WriteLine("Press enter to proceed:");
         Console.ReadLine();
         Console.WriteLine("\n");

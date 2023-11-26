@@ -13,4 +13,6 @@ public class GameState
     public Queue<GameCard> CardsNotInPlay { get; set; } = new();
     
     public Rules GameRules { get; set; } = new();
+
+    public Queue<Player> Placings { get; set; } = new();
 }

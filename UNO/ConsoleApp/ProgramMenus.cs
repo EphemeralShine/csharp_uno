@@ -1,29 +1,36 @@
 ﻿using Domain;
 using MenuSystem;
+using UnoEngine;
 
 namespace ConsoleApp;
 
-public class ProgramMenus
+public static class ProgramMenus
 {
-    /*public static Menu GetOptionsMenu(Rules rules) =>
-        new Menu("Options", new List<MenuItem>()
+    public static Menu GetOptionsMenu(GameEngine gameEngine, EMenuLevel menuLevel = EMenuLevel.Sub1) =>
+        new Menu("Configure rules", new List<MenuItem>()
         {
             new MenuItem()
             {
                 Hotkey = "h",
-                MenuLabelFunction = () => "Hand size - " + rules.HandSize,
-                MethodToRun = () => OptionsChanger.ConfigureHandSize(rules)
+                MenuLabelFunction = () => "Hand size - " + gameEngine.State.GameRules.HandSize,
+                MethodToRun = () => RulesSetup.ConfigureHandSize(gameEngine)
+            },
+            new MenuItem()
+            {
+                Hotkey = "a",
+                MenuLabelFunction = () => "Cards added to players hand if no move available - " + gameEngine.State.GameRules.CardAddition,
+                MethodToRun = () => RulesSetup.ConfigureCardAdd(gameEngine)
             },
             new MenuItem()
             {
                 Hotkey = "s",
-                MenuLabelFunction = () => "Use small cards - " + (rules.UseSmallCards ? "yes" : "no"),
-                MethodToRun = () => OptionsChanger.ConfigureSmallCards(rules)
+                MenuLabelFunction = () => "Allow multiple card moves - " + (gameEngine.State.GameRules.MultipleCardMoves ? "yes" : "no"),
+                MethodToRun = () => RulesSetup.ConfigureMultipleCardMoves(gameEngine)
             },
-        });*/
+        }, menuLevel);
 
 
-    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod, EMenuLevel menuLevel = EMenuLevel.Sub1)
+    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod, Menu rulesMenu)
     {
         Menu menu = new Menu ("<<< ||U||N||O|| >>>", new List<MenuItem>()
         {
@@ -39,14 +46,14 @@ public class ProgramMenus
                 Hotkey = "l",
                 Label = " Load game",
                 MethodToRun = loadGameMethod
-            },/*
+            },
             new MenuItem()
             {
-                Hotkey = "o",
-                Label = "Options",
-                MethodToRun = optionsMenu.Run
-            },*/
-        }, menuLevel);
+                Hotkey = "c",
+                Label = " Configure rules",
+                MethodToRun = rulesMenu.Run
+            },
+        });
         return menu;
     }
 }

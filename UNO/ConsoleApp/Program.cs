@@ -8,7 +8,7 @@ using UnoEngine;
 
 // ================== SAVES =====================
 // IGameRepository gameRepository = new GameRepositoryFileSystem();
-var connectionString = "DataSource=<%temppath%>durak.db;Cache=Shared";
+var connectionString = "DataSource=<%temppath%>uno.db;Cache=Shared";
 connectionString = connectionString.Replace("<%temppath%>", Path.GetTempPath());
 
 
@@ -21,12 +21,13 @@ using var db = new AppDbContext(contextOptions);
 // apply all the migrations
 db.Database.Migrate();
 IGameRepository gameRepository = new GameRepositoryEF(db);
-
+var gameEngine = new GameEngine();
 
 // ================== GAME =====================
 var mainMenu = ProgramMenus.GetMainMenu(
     NewGame,
-    LoadGame
+    LoadGame,
+    ProgramMenus.GetOptionsMenu(gameEngine)
 );
 
 
@@ -35,7 +36,6 @@ return;
 
 string? NewGame()
 {
-    var gameEngine = new GameEngine();
     PlayerSetup.ConfigurePlayers(gameEngine);
     gameEngine.InitializeGameStartingState();
     var gameController = new GameController(gameEngine, gameRepository);
@@ -69,10 +69,7 @@ string? LoadGame()
 
     var gameState = gameRepository.LoadGame(gameId);
 
-    var gameEngine = new GameEngine()
-    {
-        State = gameState
-    };
+    gameEngine.State = gameState;
     
     var gameController = new GameController(gameEngine, gameRepository);
 

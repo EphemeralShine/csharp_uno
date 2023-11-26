@@ -90,6 +90,7 @@ public class GameEngine
         {
             return false;
         }
+        
         switch (cards.Count)
         {
             case 1 when cards[0].CardColor == ECardColor.Black:
@@ -261,7 +262,7 @@ public class GameEngine
         }
     }
     
-    public Player? DetermineLoser()
+    /*public Player? DetermineLoser()
     {
         foreach (var player in State.Players)
         {
@@ -271,6 +272,21 @@ public class GameEngine
             }
         }
         return null;
+    }*/
+
+    public void Placings()
+    {
+        if (State.Placings.Count < 3)
+        {
+            foreach (var player in State.Players)
+            {
+                if (player.PlayerHand.Count > 0)
+                {
+                    State.Placings.Enqueue(player);
+                }
+            }
+        }
+        return;
     }
 
     public int DetermineMaxPlayerCount()
