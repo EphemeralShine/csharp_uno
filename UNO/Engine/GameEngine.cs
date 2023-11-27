@@ -81,7 +81,7 @@ public class GameEngine
         }
 
         State.CurrentColor = State.CardToBeat.CardColor;
-        State.ActivePlayerNo = 0; //TODO: how to choose a starter
+        State.ActivePlayerNo = 0;
     }
 
     public bool IsMoveValid(List<GameCard> cards)
