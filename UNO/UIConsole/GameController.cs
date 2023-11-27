@@ -37,7 +37,7 @@ public class GameController
             if (key.Key == ConsoleKey.X)
             {
                 Console.WriteLine("\n");
-                return "x";
+                return "r";
             }
             
             while (true)//player move loop
@@ -152,6 +152,6 @@ public class GameController
         Console.WriteLine("Press enter to proceed:");
         Console.ReadLine();
         Console.WriteLine("\n");
-        return "x";
+        return "r";
     }
 }
