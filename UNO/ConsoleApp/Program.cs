@@ -21,14 +21,13 @@ using var db = new AppDbContext(contextOptions);
 // apply all the migrations
 db.Database.Migrate();
 IGameRepository gameRepository = new GameRepositoryEF(db);
-var gameEngine = new GameEngine();
-
+ var rules = new Rules();
 // ================== GAME =====================
 var mainMenu = ProgramMenus.GetMainMenu(
     NewGame,
-    LoadGame,
-    ProgramMenus.GetOptionsMenu(gameEngine),
-    gameEngine
+    () => ProgramMenus.GetLoadGameMenu(gameRepository, LoadGame),
+    ProgramMenus.GetOptionsMenu(rules),
+    rules
 );
 
 
@@ -37,6 +36,13 @@ return;
 
 string? NewGame()
 {
+    var gameEngine = new GameEngine
+    {
+        State =
+        {
+            GameRules = rules
+        }
+    };
     PlayerSetup.ConfigurePlayers(gameEngine);
     gameEngine.InitializeGameStartingState();
     var gameController = new GameController(gameEngine, gameRepository);
@@ -44,38 +50,14 @@ string? NewGame()
     return null;
 }
 
-string? LoadGame()
+string? LoadGame(Guid gameId)
 {
-    Console.WriteLine("Saved games");
-    var saveGameList = gameRepository.GetSaveGames();
-    var saveGameListDisplay = saveGameList.Select((s, i) => (i + 1) + " - " + s).ToList();
-
-    if (saveGameListDisplay.Count == 0) return null;
-
-    Guid gameId;
-    while (true)
-    {
-        Console.WriteLine(string.Join("\n", saveGameListDisplay));
-        var prompt = $"Select game to load (1..{saveGameListDisplay.Count}):";
-        int userChoice = Prompts.Prompt<int>(prompt, "^([1-9]|[1-9][0-9]|99)$");
-        if (userChoice < 1 || userChoice > saveGameListDisplay.Count)
-        { 
-            Console.WriteLine("Not in range...");
-            continue;
-        }
-        gameId = saveGameList[userChoice - 1].id;
-        Console.WriteLine($"Loading file: {gameId}");
-        break;
-    }
-
+    var gameEngine = new GameEngine();
+    Console.WriteLine($"Loading file: {gameId}");
     var gameState = gameRepository.LoadGame(gameId);
-
     gameEngine.State = gameState;
-    
     var gameController = new GameController(gameEngine, gameRepository);
-
     gameController.GameLoop();
-
     return null;
 }
 

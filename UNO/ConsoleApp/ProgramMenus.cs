@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DAL;
+using Domain;
 using MenuSystem;
 using UnoEngine;
 
@@ -6,41 +7,73 @@ namespace ConsoleApp;
 
 public static class ProgramMenus
 {
-    public static Menu GetOptionsMenu(GameEngine gameEngine, EMenuLevel menuLevel = EMenuLevel.Sub1) =>
+    public static Menu GetOptionsMenu(Rules rules, EMenuLevel menuLevel = EMenuLevel.Sub1) =>
         new Menu("Configure rules", new List<MenuItem>()
         {
             new MenuItem()
             {
                 Hotkey = "h",
-                MenuLabelFunction = () => "Hand size - " + gameEngine.State.GameRules.HandSize,
-                MethodToRun = () => RulesSetup.ConfigureHandSize(gameEngine)
+                MenuLabelFunction = () => "Hand size - " + rules.HandSize,
+                MethodToRun = () => RulesSetup.ConfigureHandSize(rules)
             },
             new MenuItem()
             {
                 Hotkey = "a",
-                MenuLabelFunction = () => "Cards added to players hand if no move available - " + gameEngine.State.GameRules.CardAddition,
-                MethodToRun = () => RulesSetup.ConfigureCardAdd(gameEngine)
+                MenuLabelFunction = () =>
+                    "Cards added to players hand if no move available - " + rules.CardAddition,
+                MethodToRun = () => RulesSetup.ConfigureCardAdd(rules)
             },
             new MenuItem()
             {
                 Hotkey = "m",
-                MenuLabelFunction = () => "Allow multiple card moves - " + (gameEngine.State.GameRules.MultipleCardMoves ? "yes" : "no"),
-                MethodToRun = () => RulesSetup.ConfigureMultipleCardMoves(gameEngine)
+                MenuLabelFunction = () =>
+                    "Allow multiple card moves - " + (rules.MultipleCardMoves ? "yes" : "no"),
+                MethodToRun = () => RulesSetup.ConfigureMultipleCardMoves(rules)
             },
         }, menuLevel);
 
-
-    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod, Menu rulesMenu, GameEngine gameEngine)
+    public static Menu GetLoadGameMenu(IGameRepository gameRepository, Func<Guid, string?> loadGameMethod,
+        EMenuLevel menuLevel = EMenuLevel.Sub1)
     {
-        Menu menu = new Menu ("<<< ||U||N||O|| >>>", new List<MenuItem>()
+        var saveGameList = gameRepository.GetSaveGames();
+
+        if (saveGameList.Count == 0)
+        {
+            return new Menu("No save files found", new List<MenuItem>(), menuLevel);
+        }
+
+        int i = 1;
+        var menuList = new List<MenuItem>();
+        foreach (var save in saveGameList)
+        {
+            var menuItem = new MenuItem()
+            {
+                Hotkey = i.ToString(),
+                MenuLabelFunction = () => " " + save.dt,
+                MethodToRun = () => loadGameMethod(save.id)
+            };
+            menuList.Add(menuItem);
+            i++;
+        }
+
+        var menu = new Menu("Saved games", menuList, menuLevel);
+        return menu;
+    }
+
+    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<Menu> loadGameMenuMethod, Menu rulesMenu,
+        Rules rules)
+    {
+        Menu menu = new Menu("<<< ||U||N||O|| >>>", new List<MenuItem>()
         {
             new MenuItem()
             {
                 Hotkey = "s",
                 Label = " Start a new game: ",
-                MenuLabelFunction = () => " Start a new game:\nHand size - " + gameEngine.State.GameRules.HandSize + 
-                                          "\nCards added to players hand if no move available - " + gameEngine.State.GameRules.CardAddition + 
-                                          "\nAllow multiple card moves - " + (gameEngine.State.GameRules.MultipleCardMoves ? "yes" : "no"),
+                MenuLabelFunction = () => " Start a new game:\nHand size - " + rules.HandSize +
+                                          "\nCards added to players hand if no move available - " +
+                                          rules.CardAddition +
+                                          "\nAllow multiple card moves - " +
+                                          (rules.MultipleCardMoves ? "yes" : "no"),
                 MethodToRun = newGameMethod
             },
             new MenuItem()
@@ -53,10 +86,11 @@ public static class ProgramMenus
             {
                 Hotkey = "l",
                 Label = " Load game",
-                MethodToRun = loadGameMethod
+                MethodToRun = () => loadGameMenuMethod().Run()
             },
         });
         return menu;
     }
 }
+
 

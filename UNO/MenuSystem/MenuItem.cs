@@ -7,4 +7,5 @@ public class MenuItem
     public string Hotkey { get; set; } = default!;
 
     public Func<string?>? MethodToRun { get; set; } = null;
+    
 }
