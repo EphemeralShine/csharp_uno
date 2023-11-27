@@ -66,10 +66,11 @@ public class Menu
 
     public string Run()
     {
+        Console.Clear();
         while (true)
         {
             var userChoice = "";
-            Console.Clear();
+            /*Console.Clear();*/
             while (!ReservedHotkeys.Contains(userChoice.ToLower()))
             {
                 Draw();
@@ -95,10 +96,12 @@ public class Menu
                             Console.Clear();
                             userChoice = result;
                         }
+                        Console.Clear();
                     }
                 }
                 else if (!ReservedHotkeys.Contains(userChoice?.ToLower()))
                 {
+                    Console.Clear();
                     Console.WriteLine("Unknown input!");
                 }
             }
@@ -106,12 +109,17 @@ public class Menu
             {
                 case "r" when MenuLevel == EMenuLevel.Main:
                     Console.Clear();
-                    Console.WriteLine("Unknown input!");
+                    Console.WriteLine("Already in main menu!");
                     continue;
+                case "r" when MenuLevel != EMenuLevel.Main:
+                    Console.Clear();
+                    return userChoice;
                 case "b" when MenuLevel == EMenuLevel.Main:
                     Console.Clear();
-                    Console.WriteLine("Unknown input!");
+                    Console.WriteLine("Already in main menu!");
                     continue;
+                case "b" when MenuLevel != EMenuLevel.Main:
+                    return userChoice;
                 case "x":
                     return userChoice;
             }

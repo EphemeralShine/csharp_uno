@@ -8,7 +8,7 @@ namespace ConsoleApp;
 public static class ProgramMenus
 {
     public static Menu GetOptionsMenu(Rules rules, EMenuLevel menuLevel = EMenuLevel.Sub1) =>
-        new Menu("Configure rules", new List<MenuItem>()
+        new Menu("<<< ||R||U||L||E||S|| >>>", new List<MenuItem>()
         {
             new MenuItem()
             {
@@ -56,7 +56,7 @@ public static class ProgramMenus
             i++;
         }
 
-        var menu = new Menu("Saved games", menuList, menuLevel);
+        var menu = new Menu("<<< ||S||A||V||E||S|| >>>", menuList, menuLevel);
         return menu;
     }
 

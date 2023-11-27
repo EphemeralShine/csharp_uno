@@ -9,7 +9,7 @@ public static class RulesSetup
     public static string? ConfigureHandSize(Rules rules)
     {
         rules.HandSize =
-            Prompts.PromptWithDefault("Player hand size (5 - 19), default 7:", "^(1[0-9]|[2-9])$", 7);
+            Prompts.PromptWithDefault("Player hand size (2 - 19), default 7:", "^(1[0-9]|[2-9])$", 7);
         return null;
     }
 
