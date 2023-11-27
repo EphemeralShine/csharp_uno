@@ -27,7 +27,8 @@ var gameEngine = new GameEngine();
 var mainMenu = ProgramMenus.GetMainMenu(
     NewGame,
     LoadGame,
-    ProgramMenus.GetOptionsMenu(gameEngine)
+    ProgramMenus.GetOptionsMenu(gameEngine),
+    gameEngine
 );
 
 

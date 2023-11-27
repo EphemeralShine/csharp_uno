@@ -43,7 +43,9 @@ public class Menu
         foreach (var menuItem in MenuItems)
         {
             Console.Write($"{menuItem.Key})");
-            Console.WriteLine(menuItem.Value.Label);
+            Console.WriteLine(menuItem.Value.MenuLabelFunction != null
+                ? menuItem.Value.MenuLabelFunction()
+                : menuItem.Value.Label);
         }
 
         if (MenuLevel == EMenuLevel.Sub2)

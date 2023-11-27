@@ -16,7 +16,7 @@ public static class RulesSetup
     {
         gameEngine.State.GameRules.CardAddition =
             Prompts.PromptWithDefault(
-                "Cards added to players deck if there is no move for the player (1-4), default 2:", "^[1-7]$", 2);
+                "Cards added to players deck if there is no move for the player (1-4), default 2:", "^[1-4]$", 2);
         return null;
     }
 

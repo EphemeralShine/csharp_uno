@@ -23,14 +23,14 @@ public static class ProgramMenus
             },
             new MenuItem()
             {
-                Hotkey = "s",
+                Hotkey = "m",
                 MenuLabelFunction = () => "Allow multiple card moves - " + (gameEngine.State.GameRules.MultipleCardMoves ? "yes" : "no"),
                 MethodToRun = () => RulesSetup.ConfigureMultipleCardMoves(gameEngine)
             },
         }, menuLevel);
 
 
-    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod, Menu rulesMenu)
+    public static Menu GetMainMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod, Menu rulesMenu, GameEngine gameEngine)
     {
         Menu menu = new Menu ("<<< ||U||N||O|| >>>", new List<MenuItem>()
         {
@@ -38,20 +38,22 @@ public static class ProgramMenus
             {
                 Hotkey = "s",
                 Label = " Start a new game: ",
-                MenuLabelFunction = () => "Start a new game: "/* + rules*/,
+                MenuLabelFunction = () => " Start a new game:\nHand size - " + gameEngine.State.GameRules.HandSize + 
+                                          "\nCards added to players hand if no move available - " + gameEngine.State.GameRules.CardAddition + 
+                                          "\nAllow multiple card moves - " + (gameEngine.State.GameRules.MultipleCardMoves ? "yes" : "no"),
                 MethodToRun = newGameMethod
+            },
+            new MenuItem()
+            {
+                Hotkey = "c",
+                Label = " Configure rules for a new game",
+                MethodToRun = rulesMenu.Run
             },
             new MenuItem()
             {
                 Hotkey = "l",
                 Label = " Load game",
                 MethodToRun = loadGameMethod
-            },
-            new MenuItem()
-            {
-                Hotkey = "c",
-                Label = " Configure rules",
-                MethodToRun = rulesMenu.Run
             },
         });
         return menu;
