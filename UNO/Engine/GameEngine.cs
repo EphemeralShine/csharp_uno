@@ -215,16 +215,26 @@ public class GameEngine
 
     public void UpdateCardToBeat(List<GameCard> cards)
     {
-        State.CardsNotInPlay.Enqueue(State.CardToBeat!);
+        State.KilledCards.Add(State.CardToBeat!);
         for (int card = 0; card < cards.Count - 1; card++)
         {
-            State.CardsNotInPlay.Enqueue(cards[card]);
+            State.KilledCards.Add(cards[card]);
         }
 
         State.CardToBeat = cards[^1];
         if (State.CardToBeat.CardColor != ECardColor.Black)
         {
             State.CurrentColor = State.CardToBeat.CardColor;
+        }
+
+        if (State.CardsNotInPlay.Count < 20)
+        {
+            while (State.KilledCards.Count > 0)
+            {
+                var randomPositionInDeck = Rnd.Next(State.KilledCards.Count);
+                State.CardsNotInPlay.Enqueue(State.KilledCards[randomPositionInDeck]);
+                State.KilledCards.RemoveAt(randomPositionInDeck);
+            }
         }
     }
 
@@ -259,24 +269,23 @@ public class GameEngine
         }
     }
     
-    /*public Player? DetermineLoser()
+    public void DetermineLoser()
     {
         foreach (var player in State.Players)
         {
             if (player.PlayerHand.Count > 0)
             {
-                return player;
+                State.Placings.Enqueue(player);
             }
         }
-        return null;
-    }*/
+    }
 
-    public void Placings()
+    public void DetermineWinner()
     {
-        if (State.Placings.Count >= 3) return;
+        if (State.Placings.Count >= 1) return;
         foreach (var player in State.Players)
         {
-            if (player.PlayerHand.Count < 0)
+            if (player.PlayerHand.Count == 0)
             {
                 State.Placings.Enqueue(player);
             }
@@ -285,7 +294,8 @@ public class GameEngine
 
     public int DetermineMaxPlayerCount()
     {
-        var availableCards = 107;
+        // leaving 20 cards to take from
+        var availableCards = 87;
         return availableCards / State.GameRules.HandSize;
     }
     

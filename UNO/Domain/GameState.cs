@@ -11,7 +11,8 @@ public class GameState
     public GameCard? CardToBeat { get; set; }
     public ECardColor? CurrentColor { get; set; }
     public Queue<GameCard> CardsNotInPlay { get; set; } = new();
-    
+
+    public List<GameCard> KilledCards { get; set; } = new();
     public Rules GameRules { get; set; } = new();
 
     public Queue<Player> Placings { get; set; } = new();

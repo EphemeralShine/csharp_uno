@@ -26,7 +26,7 @@ public class GameController
         Console.WriteLine($"Starting card is: {_gameEngine.State.CardToBeat}");
         while (_gameEngine.IsGameOver() == false) //game over loop
         {
-            _gameEngine.Placings();
+            _gameEngine.DetermineWinner();
             //Empty Movelist
             List<GameCard>? moveList = new();
             //Ask player if he is ready to see his deck
@@ -62,7 +62,7 @@ public class GameController
                         Console.WriteLine(
                             $"Player (controlled by AI) {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name} has no suitable cards. Adding 2...");
                         _gameEngine.AddCardsToPlayer();
-                        Thread.Sleep(2000);
+                        //Thread.Sleep(2000);
                     }
                     else
                     {
@@ -178,19 +178,17 @@ public class GameController
             }
         }
 
+        _gameEngine.DetermineWinner();
+        _gameEngine.DetermineLoser();
         Console.Clear();
         Console.WriteLine("<<<>>> GAME OVER <<<>>> GAME OVER <<<>>> GAME OVER <<<>>>");
-        if (_gameEngine.State.Placings.Count != 0)
+        if (_gameEngine.State.Placings.Count > 0)
         {
             Console.WriteLine($"The Winner is: {_gameEngine.State.Placings.Dequeue().Name}");
         }
-        if (_gameEngine.State.Placings.Count > 1) 
+        if (_gameEngine.State.Placings.Count > 0) 
         {
-            Console.WriteLine($"2nd place: {_gameEngine.State.Placings.Dequeue().Name}");
-        }
-        if (_gameEngine.State.Placings.Count > 2) 
-        {
-            Console.WriteLine($"3rd place: {_gameEngine.State.Placings.Dequeue().Name}");
+            Console.WriteLine($"The loser is: {_gameEngine.State.Placings.Dequeue().Name}");
         }
         /*var loser = _gameEngine.DetermineLoser();
         if (loser != null)
