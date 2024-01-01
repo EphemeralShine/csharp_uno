@@ -22,4 +22,23 @@ public class ConsoleVisualization
         );
     }
 
+    public static void DrawPreviousMove(List<GameCard> moveList, GameState state)
+    {
+        Console.Clear();
+        if (moveList[0].CardColor == ECardColor.Black)
+        {
+            Console.WriteLine($"Previous player played following cards:" + string.Join(
+                ",",
+                moveList.Select(c => c)
+            ));
+            Console.WriteLine($"The color chosen is: {state.CurrentColor!.Description()}" );
+        }
+        else
+        {
+            Console.WriteLine($"Previous player played following cards:" + string.Join(
+                ",",
+                moveList.Select(c => c)
+            ));
+        }
+    }
 }

@@ -1,7 +1,4 @@
-﻿using System.Data;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using Domain;
+﻿using Domain;
 
 namespace UnoEngine;
 
@@ -276,17 +273,14 @@ public class GameEngine
 
     public void Placings()
     {
-        if (State.Placings.Count < 3)
+        if (State.Placings.Count >= 3) return;
+        foreach (var player in State.Players)
         {
-            foreach (var player in State.Players)
+            if (player.PlayerHand.Count < 0)
             {
-                if (player.PlayerHand.Count > 0)
-                {
-                    State.Placings.Enqueue(player);
-                }
+                State.Placings.Enqueue(player);
             }
         }
-        return;
     }
 
     public int DetermineMaxPlayerCount()
@@ -294,4 +288,140 @@ public class GameEngine
         var availableCards = 107;
         return availableCards / State.GameRules.HandSize;
     }
+    
+    
+    //AI stuff
+    public List<GameCard>? AIMove()
+    {
+        var move = new List<GameCard>();
+        var desiredMoveCards = new List<GameCard>();
+        var validMoveCards = new List<GameCard>();
+        var hand = new List<GameCard>(State.Players[State.ActivePlayerNo].PlayerHand);
+        // determine valid cards for the bottom card in the move
+        foreach (var card in hand)
+        {
+            if (card.CardColor == ECardColor.Black || card.CardColor == State.CurrentColor ||
+                card.CardValue == State.CardToBeat!.CardValue)
+            {
+                validMoveCards.Add(card);
+            }
+        }
+
+        foreach (var card in validMoveCards)
+        {
+            hand.Remove(card);
+        }
+        // controller handles if no moves available ( to add some visualisation )
+        if (validMoveCards.Count == 0)
+        {
+            return null;
+        }
+        else
+        {
+            // if next player has less than 2 cards prioritize +cards cards
+            if (State.Players[GetNextPlayerNo()].PlayerHand.Count <= 2)
+            {
+                foreach (var card in validMoveCards)
+                {
+                    if (card.CardValue is ECardValue.Add2 or ECardValue.Add4)
+                    {
+                        desiredMoveCards.Add(card);
+                    }
+                }
+            }
+            // if there are no priority moves choose randomly
+            if (desiredMoveCards.Count == 0)
+            {
+                if (!State.GameRules.MultipleCardMoves)
+                {
+                    move.Add(validMoveCards[Rnd.Next(validMoveCards.Count)]);
+                }
+                else
+                {
+                    // if multiple card moves are enabled, choose random group, where there are the most amount of cards
+                    // valid move cards are expanded because second move card can be matching value with first card,
+                    // but different value and color for the card to beat
+                    var cardsToAdd = new List<GameCard>();
+                    foreach (var cardX in validMoveCards)
+                    {
+                        foreach (var cardY in hand)
+                        {
+                            if (cardX.CardValue == cardY.CardValue)
+                            {
+                                cardsToAdd.Add(cardY);
+                            }
+                        }
+                        foreach (var card in cardsToAdd)
+                        {
+                            hand.Remove(card);
+                        }
+                    }
+                    foreach (var card in cardsToAdd)
+                    {
+                        validMoveCards.Add(card);
+                    }
+                    move = AIMaxGroup(validMoveCards);
+                    // NB! make sure first move card is valid ( matching color/value of card to beat)
+                    move = move.OrderBy(card => card.CardColor == State.CurrentColor ? 0 : 1).ToList();
+                }
+            }
+            else
+            {
+                if (!State.GameRules.MultipleCardMoves)
+                {
+                    move.Add(desiredMoveCards[Rnd.Next(desiredMoveCards.Count)]);
+                }
+                else
+                {
+                    foreach (var cardX in desiredMoveCards)
+                    {
+                        var cardsToRemove = new List<GameCard>();
+                        foreach (var cardY in hand)
+                        {
+                            if (cardX.CardValue == cardY.CardValue)
+                            {
+                                desiredMoveCards.Add(cardY);
+                                cardsToRemove.Add(cardY);
+                            }
+                        }
+                        foreach (var card in cardsToRemove)
+                        {
+                            hand.Remove(card);
+                        }
+                    }
+                    move = AIMaxGroup(desiredMoveCards);
+                    move = move.OrderBy(card => card.CardColor == State.CurrentColor ? 0 : 1).ToList();
+                }
+            }
+        }
+        // if move contains color changes, handle them
+        if (move.Any(card => card.CardColor == ECardColor.Black))
+        {
+            // choose color that player has the most colors of
+            State.CurrentColor = AIColor(State.Players[State.ActivePlayerNo].PlayerHand);
+        }
+        return move;
+    }
+
+    private ECardColor AIColor(List<GameCard> hand)
+    {
+        var moveGroupsColor = hand.GroupBy(card => card.CardColor);
+        var largestGroupColor = moveGroupsColor.OrderByDescending(group => group.Count()).First();
+        return largestGroupColor.Key;
+    }
+
+    private List<GameCard> AIMaxGroup(List<GameCard> validMoveCards)
+    {
+        var move = new List<GameCard>();
+        var moveGroupsValue = validMoveCards.GroupBy(card => card.CardValue);
+        var largestGroupValue = moveGroupsValue.OrderByDescending(group => group.Count()).First();
+        foreach (var card in largestGroupValue)
+        {
+            move.Add(card);
+        }
+        return move;
+    }
 }
+
+
+

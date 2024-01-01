@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using DAL;
 using Domain;
@@ -23,126 +24,173 @@ public class GameController
         Console.Clear();
         //1.Show first card to beat
         Console.WriteLine($"Starting card is: {_gameEngine.State.CardToBeat}");
-        while (_gameEngine.IsGameOver() == false)//game over loop
+        while (_gameEngine.IsGameOver() == false) //game over loop
         {
             _gameEngine.Placings();
             //Empty Movelist
-            List<GameCard> moveList = new();
+            List<GameCard>? moveList = new();
             //Ask player if he is ready to see his deck
-            Console.Clear();
-            Console.WriteLine("Game progress is saved after each move automatically. Press 'x' to go back to main menu");
-            Console.WriteLine($"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
-            Console.Write("Your turn, make sure you are alone looking at screen! Press any button to continue...");
+            Console.WriteLine(
+                "Game progress is saved after each move automatically. Press 'x' to go back to main menu");
+            if (_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerType == EPlayerType.Ai)
+            {
+                Console.WriteLine(
+                    $"Player (controlled by AI) {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
+                Console.Write("Press any button to let AI make a move...");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
+                Console.Write("Your turn, make sure you are alone looking at screen! Press any button to continue...");
+            }
+
             var key = Console.ReadKey();
             if (key.Key == ConsoleKey.X)
             {
                 Console.WriteLine("\n");
                 return "r";
             }
-            
-            while (true)//player move loop
+
+            if (_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerType == EPlayerType.Ai)
             {
-                while (true)//loop to check if player has cards to play
+                while (true)
                 {
-                    //2.Show player deck
-                    Console.WriteLine(
-                        $"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
-                    ConsoleVisualization.DrawDesk(_gameEngine.State);
-                    ConsoleVisualization.DrawPlayerHand(_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo]);
-                    //If no cards to play, inform player and wait for input to add 2 card to player hand and get back to step 2
-                    if (_gameEngine.IsPlayerAbleToMove() == false)
+                    moveList = _gameEngine.AIMove();
+                    if (moveList == null)
                     {
-                        Console.WriteLine("No suitable cards in your Deck! Adding 2");
+                        Console.WriteLine(
+                            $"Player (controlled by AI) {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name} has no suitable cards. Adding 2...");
                         _gameEngine.AddCardsToPlayer();
-                        Console.WriteLine("Press enter to proceed...");
-                        Console.ReadKey();
+                        Thread.Sleep(2000);
                     }
                     else
                     {
+                        _gameEngine.UpdatePlayerHand(moveList);
+                        _gameEngine.CardsAction(moveList);
+                        _gameEngine.UpdateCardToBeat(moveList);
+                        _gameEngine.UpdateActivePlayerNo();
+                        _repository.Save(_gameEngine.State.Id, _gameEngine.State);                    
+                        ConsoleVisualization.DrawPreviousMove(moveList, _gameEngine.State);
                         break;
                     }
                 }
-                //Ask for card input
-                while (true)
+            }
+            else
+            {
+                while (true) //player move loop
                 {
-                    bool flag = false;
-                    var cardPromptString =
-                        $"Choose card(s) to play (first card beating current card to beat, last card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:)";
-                    string playerChoiceStr = Prompts.Prompt<string>(cardPromptString, "^[0-9,]+$");
-                    var playerChoices = playerChoiceStr!.Split(",").Select(s => int.Parse(s.Trim()));
-                    //Add cards to moveList
-                    foreach (var num in playerChoices)
+                    while (true) //loop to check if player has cards to play
                     {
-                        
-                        if (num > _gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count ||
-                            num < 1)
+                        //2.Show player deck
+                        Console.WriteLine(
+                            $"Player {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name}");
+                        ConsoleVisualization.DrawDesk(_gameEngine.State);
+                        ConsoleVisualization.DrawPlayerHand(
+                            _gameEngine.State.Players[_gameEngine.State.ActivePlayerNo]);
+                        //If no cards to play, inform player and wait for input to add 2 card to player hand and get back to step 2
+                        if (_gameEngine.IsPlayerAbleToMove() == false)
                         {
-                            Console.WriteLine("No card with such index in your deck!");
-                            flag = true;
+                            Console.WriteLine(
+                                $"No suitable cards in your Deck! Adding {_gameEngine.State.GameRules.CardAddition}");
+                            _gameEngine.AddCardsToPlayer();
+                            Console.WriteLine("Press enter to proceed...");
+                            Console.ReadKey();
+                        }
+                        else
+                        {
                             break;
                         }
-                        moveList.Add(_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand[num - 1]);
                     }
-                    if (flag)
+
+                    //Ask for card input
+                    while (true)
                     {
+                        bool flag = false;
+                        var cardPromptString =
+                            $"Choose card(s) to play (first card beating current card to beat, last card being the next card to beat) 1-{_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count}, comma separated:)";
+                        string playerChoiceStr = Prompts.Prompt<string>(cardPromptString, "^[0-9,]+$");
+                        var playerChoices = playerChoiceStr!.Split(",").Select(s => int.Parse(s.Trim()));
+                        //Add cards to moveList
+                        foreach (var num in playerChoices)
+                        {
+
+                            if (num > _gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand.Count ||
+                                num < 1)
+                            {
+                                Console.WriteLine("No card with such index in your deck!");
+                                flag = true;
+                                break;
+                            }
+
+                            moveList.Add(
+                                _gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].PlayerHand[num - 1]);
+                        }
+
+                        if (flag)
+                        {
+                            continue;
+                        }
+
+                        break;
+                    }
+
+                    //Validate move legality
+                    if (_gameEngine.IsMoveValid(moveList) == false)
+                    {
+                        Console.WriteLine("Illegal move!");
+                        moveList.Clear();
                         continue;
                     }
+
+                    //Update player deck
+                    _gameEngine.UpdatePlayerHand(moveList);
+                    //Perform card actions
+                    if (moveList[0].CardColor == ECardColor.Black)
+                    {
+                        ECardColor playerColorChange = ECardColor.None;
+                        var playerColorStr = Prompts.Prompt<string>("Choose next color 1-4: 1)🔴, 2)🔵, 3)🟢, 4)🟡",
+                            "^(1|2|3|4)$");
+                        playerColorChange = playerColorStr switch
+                        {
+                            "1" => ECardColor.Red,
+                            "2" => ECardColor.Blue,
+                            "3" => ECardColor.Green,
+                            "4" => ECardColor.Yellow,
+                            _ => playerColorChange
+                        };
+                        _gameEngine.CardsAction(moveList, playerColorChange);
+                    }
+                    else
+                    {
+                        _gameEngine.CardsAction(moveList);
+                    }
+
+                    //Update card to beat, move the old one and other cards in move to q 
+                    _gameEngine.UpdateCardToBeat(moveList);
+                    //Update player
+                    _gameEngine.UpdateActivePlayerNo();
+                    _repository.Save(_gameEngine.State.Id, _gameEngine.State);
+                    ConsoleVisualization.DrawPreviousMove(moveList, _gameEngine.State);
                     break;
                 }
 
-                //Validate move legality
-                if (_gameEngine.IsMoveValid(moveList) == false)
-                {
-                    Console.WriteLine("Illegal move!");
-                    moveList.Clear();
-                    continue;
-                }
-                
-                //Update player deck
-                _gameEngine.UpdatePlayerHand(moveList);
-                //Perform card actions
-                if (moveList[0].CardColor == ECardColor.Black)
-                {
-                    ECardColor playerColorChange = ECardColor.None;
-                    var playerColorStr = Prompts.Prompt<string>("Choose next color 1-4: 1)🔴, 2)🔵, 3)🟢, 4)🟡",
-                        "^(1|2|3|4)$");
-                    playerColorChange = playerColorStr switch
-                    {
-                        "1" => ECardColor.Red,
-                        "2" => ECardColor.Blue,
-                        "3" => ECardColor.Green, 
-                        "4" => ECardColor.Yellow,
-                        _ => playerColorChange
-                    };
-                    _gameEngine.CardsAction(moveList, playerColorChange); 
-                }
-                else
-                {
-                        _gameEngine.CardsAction(moveList);
-                }
-
-                //Update card to beat, move the old one and other cards in move to q 
-                _gameEngine.UpdateCardToBeat(moveList);
-                //Update player
-                _gameEngine.UpdateActivePlayerNo();
-                _repository.Save(_gameEngine.State.Id, _gameEngine.State);
-                break;
             }
-            
         }
+
         Console.Clear();
         Console.WriteLine("<<<>>> GAME OVER <<<>>> GAME OVER <<<>>> GAME OVER <<<>>>");
         if (_gameEngine.State.Placings.Count != 0)
         {
-            Console.WriteLine($"The Winner is: {_gameEngine.State.Placings.Dequeue()}");
+            Console.WriteLine($"The Winner is: {_gameEngine.State.Placings.Dequeue().Name}");
         }
         if (_gameEngine.State.Placings.Count > 1) 
         {
-            Console.WriteLine($"2nd place: {_gameEngine.State.Placings.Dequeue()}");
+            Console.WriteLine($"2nd place: {_gameEngine.State.Placings.Dequeue().Name}");
         }
         if (_gameEngine.State.Placings.Count > 2) 
         {
-            Console.WriteLine($"3rd place: {_gameEngine.State.Placings.Dequeue()}");
+            Console.WriteLine($"3rd place: {_gameEngine.State.Placings.Dequeue().Name}");
         }
         /*var loser = _gameEngine.DetermineLoser();
         if (loser != null)
