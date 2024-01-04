@@ -7,8 +7,8 @@ using UIConsole;
 using UnoEngine;
 
 // ================== SAVES =====================
-IGameRepository gameRepository = new GameRepositoryFileSystem();
-/*var connectionString = "DataSource=<%temppath%>uno.db;Cache=Shared";
+//IGameRepository gameRepository = new GameRepositoryFileSystem();
+var connectionString = "DataSource=<%temppath%>uno.db;Cache=Shared";
 connectionString = connectionString.Replace("<%temppath%>", Path.GetTempPath());
 
 
@@ -20,7 +20,7 @@ var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
 using var db = new AppDbContext(contextOptions);
 // apply all the migrations
 db.Database.Migrate();
-IGameRepository gameRepository = new GameRepositoryEF(db);*/
+IGameRepository gameRepository = new GameRepositoryEF(db);
  var rules = new Rules();
 // ================== GAME =====================
 var mainMenu = ProgramMenus.GetMainMenu(

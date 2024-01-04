@@ -62,7 +62,7 @@ public class GameController
                         Console.WriteLine(
                             $"Player (controlled by AI) {_gameEngine.State.ActivePlayerNo + 1} - {_gameEngine.State.Players[_gameEngine.State.ActivePlayerNo].Name} has no suitable cards. Adding 2...");
                         _gameEngine.AddCardsToPlayer();
-                        //Thread.Sleep(2000);
+                        Thread.Sleep(1000);
                     }
                     else
                     {
@@ -190,11 +190,6 @@ public class GameController
         {
             Console.WriteLine($"The loser is: {_gameEngine.State.Placings.Dequeue().Name}");
         }
-        /*var loser = _gameEngine.DetermineLoser();
-        if (loser != null)
-        {
-            Console.WriteLine($"The loser is: {loser.Name}");
-        }*/
         Console.WriteLine("Press enter to proceed:");
         Console.ReadLine();
         Console.WriteLine("\n");

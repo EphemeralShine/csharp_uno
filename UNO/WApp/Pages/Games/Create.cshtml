@@ -8,10 +8,14 @@
 <h1>Create Game</h1>
 
 <h4>Configure Rules</h4>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="get">
+        <form method="post" asp-page="/Players/Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-check form-switch">
                 <label asp-for="@Model.MultipleCardMoves" class="form-check-label" for="flexSwitchCheckDefault">Multiple card moves</label>

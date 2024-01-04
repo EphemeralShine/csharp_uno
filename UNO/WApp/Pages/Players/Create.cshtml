@@ -1,32 +1,30 @@
 @page
-@model WebApplication1.Pages_Players.CreateModel
+@model CreateModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Create Players</h1>
 
-<h4>Player</h4>
+<h4>How many playing? (including AI)</h4>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form method="post" asp-page="Configure">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Player.NickName" class="control-label"></label>
-                <input asp-for="Player.NickName" class="form-control" />
-                <span asp-validation-for="Player.NickName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="@Model.PlayerCount" class="control-label">Player count</label>
-                <input asp-for="@Model.PlayerCount" class="form-control"/>
+                <input asp-for="@Model.PlayerCount" class="form-control" value="2"/>
                 <span asp-validation-for="@Model.PlayerCount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="@Model.AiCount" class="control-label">AI count</label>
-                <input asp-for="@Model.AiCount" class="form-control"/>
-                <span asp-validation-for="@Model.AiCount" class="text-danger"></span>
+                <input asp-for="@Model.MultipleCardMoves" type="hidden"/>
+                <input asp-for="@Model.CardAddition" type="hidden"/>
+                <input asp-for="@Model.HandSize" type="hidden"/>
+                <input asp-for="@Model.MaxPlayerCount" type="hidden"/>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -35,9 +33,6 @@
     </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

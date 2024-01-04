@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIConsole", "UIConsole\UICo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{D6584B52-DBEE-4D21-BAA1-E20CF30D10DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WApp", "WApp\WApp.csproj", "{EB955309-C5D6-437E-B2F4-E41EF0599E99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,5 +57,9 @@ Global
 		{D6584B52-DBEE-4D21-BAA1-E20CF30D10DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6584B52-DBEE-4D21-BAA1-E20CF30D10DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6584B52-DBEE-4D21-BAA1-E20CF30D10DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB955309-C5D6-437E-B2F4-E41EF0599E99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB955309-C5D6-437E-B2F4-E41EF0599E99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB955309-C5D6-437E-B2F4-E41EF0599E99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB955309-C5D6-437E-B2F4-E41EF0599E99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

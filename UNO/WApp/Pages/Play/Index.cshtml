@@ -22,6 +22,10 @@
 }
 else
 {
+    <h4>Progress saved after each move automatically</h4>
+    <div>
+        <a asp-page="/Index">Back to main menu</a>
+    </div>
     <body>
     <h5>Last reload <span id="reload-label">-</span> seconds ago</h5>
     <div>
@@ -69,34 +73,40 @@ else
     @if (Model.PlayerId != Model.SpectatorGuid)
     {
         <div>Playing as player @(Model.GetPlayerNo() + 1) (@Model.GetPlayer().Name)</div>
-    <div>
-        @foreach (var card in Model.Engine.State.Players[Model.GetPlayerNo()].PlayerHand) 
-        { 
-            <div class="card @card.CardValue @card.CardColor.ToString().ToLower()">
-                <span class="inner">
-                    <span class="mark">
-                        @if (card.CardValue == ECardValue.Add2)
-                        {
-                            <text>+2</text>
-                        }
-                        else if (card.CardValue == ECardValue.Add4)
-                        {
-                            <text>+4🧮</text>
-                        }                        
-                        else if (card.CardValue == ECardValue.ChangeColor) 
-                        { 
-                            <text>🧮</text>
-                        }
-                        else
-                        {
-                            <text>@card.CardValue.Description()</text>
-                        }
+        <div id="cardContainer">
+            @foreach (var card in Model.Engine.State.Players[Model.GetPlayerNo()].PlayerHand) 
+            { 
+                <div class="card @card.CardValue @card.CardColor.ToString().ToLower()">
+                    <span class="inner">
+                        <span class="mark">
+                            @if (card.CardValue == ECardValue.Add2)
+                            {
+                                <text>+2</text>
+                            }
+                            else if (card.CardValue == ECardValue.Add4)
+                            {
+                                <text>+4🧮</text>
+                            }                        
+                            else if (card.CardValue == ECardValue.ChangeColor) 
+                            { 
+                                <text>🧮</text>
+                            }
+                            else
+                            {
+                                <text>@card.CardValue.Description()</text>
+                            }
+                        </span>
                     </span>
-                </span>
-            </div>
+                </div>
             
-        }
-    </div>
+            }
+        </div>
+        <div>
+        <form method="post" asp-page-handler="SubmitCards">
+            <input type="hidden" id="selectedCards" name="selectedCards" />
+            <button type="submit">Submit Selected Cards</button>
+        </form>
+        </div>
     }
     else
     {

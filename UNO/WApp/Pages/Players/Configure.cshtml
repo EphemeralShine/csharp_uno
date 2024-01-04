@@ -1,0 +1,50 @@
+﻿@page
+@using Domain
+@model Configure
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Configure players</h1>
+
+<h4>Player names and types</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" asp-page="/Games/Index">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @for(var i = 0; i < Model.PlayerCount; i++) {
+                var currentPlayerIndex = i;
+                <div class="form-group">
+                    <label class="control-label">Player @(i + 1)  name</label>
+                    <input asp-for="@Model.Players[currentPlayerIndex].NickName" class="form-control" value="Player - @(i + 1)"/>
+                    <span asp-validation-for="@Model.Players[currentPlayerIndex].NickName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Player @(i + 1) type</label>
+                    <select asp-for="@Model.Players[currentPlayerIndex].PlayerType" class="form-control">
+                      @foreach (var item in Html.GetEnumSelectList<EPlayerType>())
+                      {
+                         <option value="@item.Value">@item.Text</option>
+                      }
+                    </select>
+                    <span asp-validation-for="@Model.Players[currentPlayerIndex].PlayerType" class="text-danger"></span>
+                </div>
+            }
+                <div>
+                  <input asp-for="@Model.MultipleCardMoves" type="hidden"/>
+                  <input asp-for="@Model.CardAddition" type="hidden"/>
+                  <input asp-for="@Model.HandSize" type="hidden"/>
+                </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -14,31 +14,29 @@ namespace WebApplication1.Pages.Games
             _context = context;
         }
 
+        [BindProperty(SupportsGet = true)] public bool MultipleCardMoves { get; set; } = true;
+
+        [BindProperty(SupportsGet = true)]
+        [Range(2, 19, ErrorMessage = "Value not in range.")]
+        public int HandSize { get; set; } = 7;
+
+        [BindProperty(SupportsGet = true)]
+        [Range(1, 4, ErrorMessage = "Value not in range.")]
+        public int CardAddition { get; set; } = 2;
+
         public IActionResult OnGet()
         {
             return Page();
         }
 
-        [BindProperty(SupportsGet = true)] 
-        public bool MultipleCardMoves { get; set; } = true;
-        
-        [BindProperty(SupportsGet = true)]
-        [Range(2, 19, ErrorMessage = "Value not in range.")]
-        public int HandSize { get; set; } = 7;
-        
-        [BindProperty(SupportsGet = true)]
-        [Range(1, 4, ErrorMessage = "Value not in range.")]
-        public int CardAddition { get; set; } = 2;        
-
-
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return Page();
-            }
-            return RedirectToPage("Index");
+                TempData["RulesConfigured"] = true;
+                return RedirectToPage("/Players/Create");
+            }  
+            return Page();
         }
     }
 }

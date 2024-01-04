@@ -3,7 +3,7 @@ using Helpers;
 
 namespace UIConsole;
 
-public class ConsoleVisualization
+public static class ConsoleVisualization
 {
     public static void DrawDesk(GameState state)
     {

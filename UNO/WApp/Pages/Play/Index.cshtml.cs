@@ -51,5 +51,52 @@ public class Index : PageModel
         var player = Engine.State.Players.FirstOrDefault(p => PlayerId == p.Id);
         return Engine.State.Players.IndexOf(player!);
     }
-    
+
+    public void OnPost(List<GameCard> moveList)
+    {
+        if (Engine.IsGameOver() == false)
+        {
+            Engine.DetermineWinner();
+            if (Engine.State.Players[Engine.State.ActivePlayerNo].PlayerType == EPlayerType.Ai)
+            {
+                
+            }
+            else
+            {
+                if (Engine.IsPlayerAbleToMove() == false)
+                {
+                    
+                }
+                else
+                {
+                    if (Engine.IsMoveValid(moveList) == false)
+                    {
+                        
+                    }
+                    else
+                    {
+                        Engine.UpdatePlayerHand(moveList);
+                        if (moveList[0].CardColor == ECardColor.Black)
+                        {
+                            // TODO
+                            ECardColor playerColorChange = ECardColor.None;
+                            Engine.CardsAction(moveList, playerColorChange);
+                        }
+                        else
+                        {
+                            Engine.CardsAction(moveList);    
+                        }
+                        Engine.UpdateCardToBeat(moveList);
+                        Engine.UpdateActivePlayerNo();
+                        _gameRepository.Save(Engine.State.Id, Engine.State);
+                    }
+                }
+            }
+        }
+        else
+        {
+            Engine.DetermineWinner();
+            Engine.DetermineLoser();
+        }
+    }
 }

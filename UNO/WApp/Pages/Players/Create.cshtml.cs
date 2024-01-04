@@ -1,41 +1,31 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using Domain.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using DAL;
-using Domain.Database;
-using Microsoft.VisualStudio.TextTemplating;
 using UnoEngine;
 
-namespace WebApplication1.Pages_Players
+namespace WebApplication1.Pages.Players
 {
     public class CreateModel : PageModel
     {
         public GameEngine Engine = new GameEngine();
+        [BindProperty(SupportsGet = true)]
+        public int MaxPlayerCount { get; set; }
 
         private readonly DAL.AppDbContext _context;
-        [BindProperty(SupportsGet = true)] 
-        public bool MultipleCardMoves { get; set; } = true;
+        [BindProperty (SupportsGet = true)] 
+        public bool MultipleCardMoves { get; set; }
         
-        [BindProperty(SupportsGet = true)]
+        [BindProperty (SupportsGet = true)]
         [Range(2, 19, ErrorMessage = "Value not in range.")]
-        public int HandSize { get; set; } = 7;
+        public int HandSize { get; set; }
         
-        [BindProperty(SupportsGet = true)]
+        [BindProperty (SupportsGet = true)]
         [Range(1, 4, ErrorMessage = "Value not in range.")]
-        public int CardAddition { get; set; } = 2;
+        public int CardAddition { get; set; }
         
-        [BindProperty(SupportsGet = true)] 
-        [Range(1, 10, ErrorMessage = "Value not in range.")]
-        public int PlayerCount { get; set; } = 2;
-        
-        [BindProperty(SupportsGet = true)] 
-        [Range(0, MaxPlayerCount, ErrorMessage = "Value not in range.")]
-        public int AiCount { get; set; } = 0;
+        [BindProperty] 
+        public int PlayerCount { get; set; }
 
         public CreateModel(DAL.AppDbContext context)
         {
@@ -44,26 +34,45 @@ namespace WebApplication1.Pages_Players
 
         public IActionResult OnGet()
         {
-        ViewData["GameId"] = new SelectList(_context.Games, "Id", "State");
-            return Page();
+            if (TempData["RulesConfigured"] != null && (bool)(TempData["RulesConfigured"] ?? false))
+            {
+                return Page();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Configure rules first!";
+                return RedirectToPage("/Games/Create");
+            }
         }
-
-        [BindProperty]
-        public Player Player { get; set; } = default!;
-
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
+        
+        public IActionResult OnPost()
         {
-            Engine.State.GameRules.MultipleCardMoves = MultipleCardMoves;
-            Engine.State.GameRules.CardAddition = CardAddition;
-            Engine.State.GameRules.HandSize = HandSize;
-            var MaxPlayerCount = Engine.DetermineMaxPlayerCount();
-            
-            
-            _context.Players.Add(Player);
-            await _context.SaveChangesAsync();
+            if (CardAddition != 0 && HandSize != 0)
+            {
+                Engine = new GameEngine
+                {
+                    State =
+                    {
+                        Id = new Guid(),
+                        GameRules =
+                        {
+                            MultipleCardMoves = MultipleCardMoves,
+                            CardAddition = CardAddition,
+                            HandSize = HandSize
+                        }
+                    }
+                };
+            }
 
-            return RedirectToPage("./Index");
+            MaxPlayerCount = Engine.DetermineMaxPlayerCount();
+            
+            if (ModelState.IsValid && PlayerCount != 0)
+            {
+                TempData["RulesConfigured"] = true;
+                TempData["PlayerCountConfigured"] = true;
+                return RedirectToPage("/Players/Configure");
+            }
+            return Page();
         }
     }
 }
