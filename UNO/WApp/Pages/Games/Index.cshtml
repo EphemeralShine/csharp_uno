@@ -1,0 +1,61 @@
+@page
+@using Domain
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Game[0].CreatedAtDt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Game[0].UpdatedAtDt)
+            </th>
+            <th>
+                Players
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Game) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAtDt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedAtDt)
+            </td>
+            <td>
+                @foreach (var player in item.Players!)
+                {
+                    if (player.PlayerType == EPlayerType.Ai)
+                    {
+                        var playerLabel = player.NickName + "(" + player.PlayerType + ")";
+                        <span>@playerLabel - Ready</span><br>
+                    }
+                    else
+                    {
+                        var playerLabel = player.NickName + "(" + player.PlayerType + ")";
+                        <a asp-page="/Play/Index" asp-route-GameId="@item.Id" asp-route-PlayerId="@player.Id">@playerLabel - Click to play as</a><br>
+                    }
+                }
+            </td>
+            <td>
+                <a asp-page="/Play/Index" asp-route-GameId="@item.Id" asp-route-PlayerId="00000000-0000-0000-0000-000000000000
+">Spectate</a><br>
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

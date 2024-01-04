@@ -1,0 +1,14 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4" style="margin-bottom: 50px">Welcome to UNO game!</h1>
+    <div class="d-grid gap-1 col-6 mx-auto">
+        <a class="btn btn-primary btn-lg" asp-page="/Games/Create" role="button">Start a new game</a><br>
+        <a class="btn btn-primary btn-lg" asp-page="/Games/Index" role="button">Load game</a><br>
+    </div>
+    <img src="~/images/logo.dd0fdeb8.webp" alt="Scuffed UNO" style="height: 240px;">
+</div>

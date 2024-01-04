@@ -1,0 +1,126 @@
+﻿@page
+@using Domain
+@using Helpers
+@model WebApplication1.Pages.Play.Index
+
+@{
+    Layout = Layout;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="css/cards.css">
+    <title>Playing</title>
+</head>
+@if (Model.GameId == Guid.Empty || (Model.PlayerId == Guid.Empty && Model.PlayerId != Model.SpectatorGuid))
+{
+    <body>
+    <h1>Game or player not chosen/chosen incorrectly!</h1>
+    </body>
+}
+else
+{
+    <body>
+    <h5>Last reload <span id="reload-label">-</span> seconds ago</h5>
+    <div>
+        <span>Player making a move - @(Model.Engine.State.ActivePlayerNo + 1) (@Model.Engine.State.Players[@Model.Engine.State.ActivePlayerNo].Name)</span><br>
+        <span>Current color - @Model.Engine.State.CurrentColor!.Description()</span><br>
+        <span>Move order - @if (Model.Engine.State.ClockwiseMoveOrder)
+                           {
+                               <text>Clockwise</text>
+                           }
+                           else
+                           { 
+                               <text>Counter-clockwise</text>
+                           }</span><br>
+       
+        @foreach (var player in @Model.Engine.State.Players)
+        {
+            <span>Player @(Model.Engine.State.Players.IndexOf(player) + 1) (@player.Name) has @player.PlayerHand.Count cards</span><br>
+        }
+    </div>
+    <div>
+        <span>Current card to beat -  <div class="card @Model.Engine.State.CardToBeat!.CardValue @Model.Engine.State.CardToBeat!.CardColor.ToString().ToLower()">
+                                                     <span class="inner">
+                                                         <span class="mark">
+                                                             @if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.Add2)
+                                                             {
+                                                                 <text>+2</text>
+                                                             }
+                                                             else if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.Add4)
+                                                             {
+                                                                 <text>+4🧮</text>
+                                                             }                        
+                                                             else if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.ChangeColor) 
+                                                             { 
+                                                                 <text>🧮</text>
+                                                             }
+                                                             else
+                                                             {
+                                                                 <text>@Model.Engine.State.CardToBeat!.CardValue.Description()</text>
+                                                             }
+                                                         </span>
+                                                     </span>
+                                                 </div></span>
+    </div>
+    
+    @if (Model.PlayerId != Model.SpectatorGuid)
+    {
+        <div>Playing as player @(Model.GetPlayerNo() + 1) (@Model.GetPlayer().Name)</div>
+    <div>
+        @foreach (var card in Model.Engine.State.Players[Model.GetPlayerNo()].PlayerHand) 
+        { 
+            <div class="card @card.CardValue @card.CardColor.ToString().ToLower()">
+                <span class="inner">
+                    <span class="mark">
+                        @if (card.CardValue == ECardValue.Add2)
+                        {
+                            <text>+2</text>
+                        }
+                        else if (card.CardValue == ECardValue.Add4)
+                        {
+                            <text>+4🧮</text>
+                        }                        
+                        else if (card.CardValue == ECardValue.ChangeColor) 
+                        { 
+                            <text>🧮</text>
+                        }
+                        else
+                        {
+                            <text>@card.CardValue.Description()</text>
+                        }
+                    </span>
+                </span>
+            </div>
+            
+        }
+    </div>
+    }
+    else
+    {
+        <div>Spectating</div>
+    }
+    </body>
+    
+    @section Scripts
+    {
+        <script>
+        let timerValue = 0;
+        let timerLabel = document.querySelector("#reload-label");
+        
+        setInterval(() => {
+            timerValue++;
+            timerLabel.innerHTML = timerValue.toString();
+            if (timerValue>=5) {
+                window.location.reload();
+            }
+        }, 1000);
+    </script>
+    }
+}
+    </html >
+
+
+

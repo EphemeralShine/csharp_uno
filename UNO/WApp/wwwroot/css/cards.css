@@ -1,0 +1,174 @@
+﻿
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:900);
+
+.card {
+    width: 116px;
+    height: 178px;
+    float: left;
+    background: #fff;
+    border-radius: 5px;
+    display: table;
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 10px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 50px; /* Adjust the font size as needed */
+    text-align: center;
+    position: relative;
+    overflow: hidden; /* Ensure content overflow is hidden */
+}
+
+.card .inner {
+    display: table-cell;
+    vertical-align: middle;
+    border-radius: 5px;
+}
+
+.card .mark {
+    display: inline-block;
+    vertical-align: middle;
+    background: #ffffff;
+    padding: 0 10px; /* Adjust the padding as needed */
+    border-radius: 100px 60px / 120px 60px;
+    line-height: 1.4;
+    overflow: hidden; /* Ensure content overflow is hidden */
+}
+
+.card:before,
+.card:after{
+    display:inline-block;
+    position:absolute;
+    line-height:0;
+    font-size:20px;
+    color:#ffffff;
+    text-shadow:
+            1px  1px 0 #000000,
+            -1px -1px 0 #000000,
+            -1px  1px 0 #000000,
+            1px -1px 0 #000000,
+            1px  0   0 #000000,
+            -1px  0   0 #000000,
+            0   -1px 0 #000000,
+            0    1px 0 #000000,
+            2px  2px 0 #000000;
+}
+
+.card:before{
+    top:15px;
+    left:10px;
+}
+.card:after{
+    bottom:15px;
+    right:10px;
+    -webkit-transform:rotate(180deg)
+}
+
+.card.blue{
+    color:#0063B3;
+}
+
+.card.blue .inner{
+    background:#0063B3;
+}
+
+.card.black{
+    color:black;
+}
+
+.card.black .inner{
+    background:black;
+}
+
+.card.green{
+    color:#18A849;
+}
+
+.card.green .inner{
+    background:#18A849;
+}
+
+.card.red{
+    color:#C72A18;
+}
+
+.card.red .inner{
+    background:#C72A18;
+}
+
+.card.yellow{
+    color:#E6CA1E;
+}
+
+.card.yellow .inner{
+    background:#E6CA1E;
+}
+
+.card.Value0:before,
+.card.Value0:after{
+    content:"0";
+}
+
+.card.Value1:before,
+.card.Value1:after{
+    content:"1";
+}
+
+.card.Value2:before,
+.card.Value2:after{
+    content:"2";
+}
+
+.card.Value3:before,
+.card.Value3:after{
+    content:"3";
+}
+
+.card.Value4:before,
+.card.Value4:after{
+    content:"4";
+}
+
+.card.Value5:before,
+.card.Value5:after{
+    content:"5";
+}
+
+.card.Value6:before,
+.card.Value6:after{
+    content:"6";
+}
+
+.card.Value7:before,
+.card.Value7:after{
+    content:"7";
+}
+
+.card.Value8:before,
+.card.Value8:after{
+    content:"8";
+}
+
+.card.Value9:before,
+.card.Value9:after{
+    content:"9";
+}
+
+.card.Reverse:before,
+.card.Reverse:after{
+    content:"🔃";
+}
+
+.card.Skip:before,
+.card.Skip:after{
+    content:"🚫";
+}
+
+.card.Add2:before,
+.card.Add2:after{
+    content:"+2";
+}
+
+.card.Add4:before,
+.card.Add4:after{
+    content:"+4";
+}
