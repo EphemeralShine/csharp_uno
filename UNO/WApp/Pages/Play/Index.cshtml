@@ -19,104 +19,176 @@
     <body>
     <h1>Game or player not chosen/chosen incorrectly!</h1>
     </body>
+}else if (Model.Engine.IsGameOver())
+{
+    Model.Engine.DetermineWinner();
+    Model.Engine.DetermineLoser();
+    <body>
+    <div class="container text-center">
+    <h1>Game Over!</h1>
+    <h3>The winner is @Model.Engine.State.Placings[0].Name</h3>
+    <h5>The loser is @Model.Engine.State.Placings[1].Name</h5>
+                <div>
+                    <a asp-page="/Index">Back to main menu</a>
+                </div>
+    </div>
+    </body>
 }
 else
 {
-    <h4>Progress saved after each move automatically</h4>
-    <div>
-        <a asp-page="/Index">Back to main menu</a>
-    </div>
     <body>
-    <h5>Last reload <span id="reload-label">-</span> seconds ago</h5>
-    <div>
-        <span>Player making a move - @(Model.Engine.State.ActivePlayerNo + 1) (@Model.Engine.State.Players[@Model.Engine.State.ActivePlayerNo].Name)</span><br>
-        <span>Current color - @Model.Engine.State.CurrentColor!.Description()</span><br>
-        <span>Move order - @if (Model.Engine.State.ClockwiseMoveOrder)
-                           {
-                               <text>Clockwise</text>
-                           }
-                           else
-                           { 
-                               <text>Counter-clockwise</text>
-                           }</span><br>
-       
-        @foreach (var player in @Model.Engine.State.Players)
-        {
-            <span>Player @(Model.Engine.State.Players.IndexOf(player) + 1) (@player.Name) has @player.PlayerHand.Count cards</span><br>
-        }
-    </div>
-    <div>
-        <span>Current card to beat -  <div class="card @Model.Engine.State.CardToBeat!.CardValue @Model.Engine.State.CardToBeat!.CardColor.ToString().ToLower()">
-                                                     <span class="inner">
-                                                         <span class="mark">
-                                                             @if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.Add2)
-                                                             {
-                                                                 <text>+2</text>
-                                                             }
-                                                             else if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.Add4)
-                                                             {
-                                                                 <text>+4🧮</text>
-                                                             }                        
-                                                             else if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.ChangeColor) 
-                                                             { 
-                                                                 <text>🧮</text>
-                                                             }
-                                                             else
-                                                             {
-                                                                 <text>@Model.Engine.State.CardToBeat!.CardValue.Description()</text>
-                                                             }
-                                                         </span>
-                                                     </span>
-                                                 </div></span>
-    </div>
-    
-    @if (Model.PlayerId != Model.SpectatorGuid)
+    @if (Model.PlayerId != Model.Engine.State.Players[Model.Engine.State.ActivePlayerNo].Id)
     {
-        <div>Playing as player @(Model.GetPlayerNo() + 1) (@Model.GetPlayer().Name)</div>
-        <div id="cardContainer">
-            @foreach (var card in Model.Engine.State.Players[Model.GetPlayerNo()].PlayerHand) 
-            { 
-                <div class="card @card.CardValue @card.CardColor.ToString().ToLower()">
-                    <span class="inner">
-                        <span class="mark">
-                            @if (card.CardValue == ECardValue.Add2)
-                            {
-                                <text>+2</text>
-                            }
-                            else if (card.CardValue == ECardValue.Add4)
-                            {
-                                <text>+4🧮</text>
-                            }                        
-                            else if (card.CardValue == ECardValue.ChangeColor) 
-                            { 
-                                <text>🧮</text>
-                            }
-                            else
-                            {
-                                <text>@card.CardValue.Description()</text>
-                            }
-                        </span>
-                    </span>
-                </div>
-            
+        <h5>Last reload <span id="reload-label">-</span> seconds ago</h5>
+    }
+    <div class="container text-center">
+    <div class="row">
+        <div class="col">
+            <b><span>Player making a move - @(Model.Engine.State.ActivePlayerNo + 1) (@Model.Engine.State.Players[@Model.Engine.State.ActivePlayerNo].Name)</span><br></b>
+            <b><span>Current color - @Model.Engine.State.CurrentColor!.Description()</span><br></b>
+            <b><span>Move order -
+                @if (Model.Engine.State.ClockwiseMoveOrder)
+                {
+                    <text>Clockwise</text>
+                }
+                else
+                {
+                    <text>Counter-clockwise</text>
+                }
+            </span></b><br>
+
+            @foreach (var player in @Model.Engine.State.Players)
+            {
+                <b><span>Player @(Model.Engine.State.Players.IndexOf(player) + 1) (@player.Name) has @player.PlayerHand.Count cards</span></b>
+                <br>
             }
         </div>
-        <div>
-        <form method="post" asp-page-handler="SubmitCards">
-            <input type="hidden" id="selectedCards" name="selectedCards" />
-            <button type="submit">Submit Selected Cards</button>
-        </form>
+        <div class="col"></div>
+        <div class="col"></div>
+        <div class="col d-flex align-items-center">
+            <h3><span>Current card to beat 👉</span></h3>
         </div>
+    <div class="col d-flex align-items-center">
+        <div class="card @Model.Engine.State.CardToBeat!.CardValue @Model.Engine.State.CardToBeat!.CardColor.ToString().ToLower()">
+            <span class="inner">
+                <span class="mark">
+                    @if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.Add2)
+                    {
+                        <text>+2</text>
+                    }
+                    else if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.Add4)
+                    {
+                        <text>+4🧮</text>
+                    }
+                    else if (Model.Engine.State.CardToBeat!.CardValue == ECardValue.ChangeColor)
+                    {
+                        <text>🧮</text>
+                    }
+                    else
+                    {
+                        <text>@Model.Engine.State.CardToBeat!.CardValue.Description()</text>
+                    }
+                </span>
+            </span>
+        </div>
+    </div>
+    </div>
+
+    @if (Model.PlayerId != Model.SpectatorGuid)
+    {
+            <div class="row">
+            <h4><div>Playing as player @(Model.GetPlayerNo() + 1) (@Model.GetPlayer().Name)</div></h4>
+            </div>
+            <div id="cardContainer" class="row">
+                @{ var i = 0; }
+                @foreach (var card in Model.Engine.State.Players[Model.GetPlayerNo()].PlayerHand)
+                {
+                    <div class="card @card.CardValue @card.CardColor.ToString().ToLower()" id="card_@i" onclick="selectCard('@i', '@card.CardValue.ToString()', '@card.CardColor.ToString()')">
+                        <span class="inner">
+                            <span class="mark">
+                                @if (card.CardValue == ECardValue.Add2)
+                                {
+                                    <text>+2</text>
+                                }
+                                else if (card.CardValue == ECardValue.Add4)
+                                {
+                                    <text>+4🧮</text>
+                                }
+                                else if (card.CardValue == ECardValue.ChangeColor)
+                                {
+                                    <text>🧮</text>
+                                }
+                                else
+                                {
+                                    <text>@card.CardValue.Description()</text>
+                                }
+                            </span>
+                        </span>
+                    </div>
+                    i++;
+                }
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="row">
+                    <div class="alert alert-danger">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
+                    </div>
+            } 
+            @if (Model.PlayerId == Model.Engine.State.Players[Model.Engine.State.ActivePlayerNo].Id)
+            {
+                <div>
+                    <form method="post">
+                        <input type="hidden" id="moveListString" name="moveListString"/>
+                        <button type="submit" class="btn btn-primary" style="margin-bottom: 50px">Submit Selected Cards</button>
+                    </form>
+                </div>
+            }
+            @if (Model.Engine.State.Players[Model.Engine.State.ActivePlayerNo].PlayerType == EPlayerType.Ai)
+            {
+                <div>
+                    <form method="post">
+                        <input type="hidden" id="moveListString" name="moveListString" value="AI"/>
+                        <button type="submit" class="btn btn-primary" style="margin-bottom: 50px">Make AI move</button>
+                    </form>
+                </div>
+            }
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="alert alert-info">
+                    @TempData["InfoMessage"]
+                </div>
+            }
     }
     else
     {
-        <div>Spectating</div>
+        <h3><div>Spectating</div></h3>
+        @if (Model.Engine.State.Players[Model.Engine.State.ActivePlayerNo].PlayerType == EPlayerType.Ai)
+        {
+            <div>
+                <form method="post">
+                    <input type="hidden" id="moveListString" name="moveListString" value="AI"/>
+                    <button type="submit" class="btn btn-primary" style="margin-bottom: 50px">Make AI move</button>
+                </form>
+            </div>
+        }
     }
+            <h5>Progress saved after each move automatically</h5>
+            <div>
+                <a asp-page="/Games/Index">Back to game list</a>
+            </div>
+    </div>
     </body>
     
     @section Scripts
     {
-        <script>
+        @if (Model.PlayerId != Model.Engine.State.Players[Model.Engine.State.ActivePlayerNo].Id)
+        {
+            <script>
         let timerValue = 0;
         let timerLabel = document.querySelector("#reload-label");
         
@@ -127,7 +199,47 @@ else
                 window.location.reload();
             }
         }, 1000);
-    </script>
+        </script>
+        }
+        else
+        {
+            <script>
+    // Initialize an empty array to store selected cards
+    let moveList = [];
+
+    function selectCard(cardId, cardValue, cardColor) {
+        // Check if the card is already selected
+        let index = findCardIndex(cardId);
+        let cardElement = document.getElementById(`card_${cardId}`);
+
+        if (index !== -1) {
+            // Card is already selected, remove it from the list
+            moveList.splice(index, 1);
+            cardElement.classList.remove('selected');
+        } else {
+            // Card is not selected, add it to the list
+            moveList.push({
+                cardId: cardId,
+                cardValue: cardValue,
+                cardColor: cardColor
+            });
+            cardElement.classList.add('selected');
+        }
+        document.getElementById('moveListString').value = JSON.stringify(moveList);
+        console.log('Selected Cards:', moveList);
+    }
+
+    function findCardIndex(cardId) {
+        // Find the index of the card in the selectedCards array
+        for (let i = 0; i < moveList.length; i++) {
+            if (moveList[i].cardId === cardId) {
+                return i;
+            }
+        }
+        return -1; // Card not found
+    }
+           </script> 
+        }
     }
 }
     </html >

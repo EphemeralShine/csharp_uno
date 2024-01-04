@@ -209,7 +209,13 @@ public class GameEngine
     {
         foreach (var card in cards)
         {
-            State.Players[State.ActivePlayerNo].PlayerHand.Remove(card);
+            var matchingCard = State.Players[State.ActivePlayerNo].PlayerHand
+                .FirstOrDefault(c => c.CardValue == card.CardValue && c.CardColor == card.CardColor);
+
+            if (matchingCard != null)
+            {
+                State.Players[State.ActivePlayerNo].PlayerHand.Remove(matchingCard);
+            }
         }
     }
 
@@ -275,7 +281,7 @@ public class GameEngine
         {
             if (player.PlayerHand.Count > 0)
             {
-                State.Placings.Enqueue(player);
+                State.Placings.Add(player);
             }
         }
     }
@@ -287,7 +293,7 @@ public class GameEngine
         {
             if (player.PlayerHand.Count == 0)
             {
-                State.Placings.Enqueue(player);
+                State.Placings.Add(player);
             }
         }
     }

@@ -15,5 +15,5 @@ public class GameState
     public List<GameCard> KilledCards { get; set; } = new();
     public Rules GameRules { get; set; } = new();
 
-    public Queue<Player> Placings { get; set; } = new();
+    public List<Player> Placings { get; set; } = new();
 }

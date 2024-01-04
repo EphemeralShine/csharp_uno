@@ -2,13 +2,15 @@
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using UnoEngine;
 
 namespace WebApplication1.Pages.Play;
 
 public class Index : PageModel
 {
-    private readonly DAL.AppDbContext _context;
+    private readonly AppDbContext _context;
 
     private readonly IGameRepository _gameRepository;
     private const string SpectatorGuidString = "00000000-0000-0000-0000-000000000000";
@@ -37,7 +39,11 @@ public class Index : PageModel
         {
             State = gameState
         };
-
+        while (Engine.IsPlayerAbleToMove() == false)
+        {
+            Engine.AddCardsToPlayer();
+            _gameRepository.Save(Engine.State.Id, Engine.State);
+        }
     }
     
     public Player GetPlayer()
@@ -52,51 +58,98 @@ public class Index : PageModel
         return Engine.State.Players.IndexOf(player!);
     }
 
-    public void OnPost(List<GameCard> moveList)
+    public IActionResult OnPost(string moveListString)
     {
-        if (Engine.IsGameOver() == false)
+        List<GameCard> moveList = new List<GameCard>();
+        var gameState = _gameRepository.LoadGame(GameId);
+        if (moveListString == "AI")
         {
-            Engine.DetermineWinner();
-            if (Engine.State.Players[Engine.State.ActivePlayerNo].PlayerType == EPlayerType.Ai)
+            Engine = new GameEngine()
             {
-                
+                State = gameState
+            };
+            if (Engine.IsGameOver() == false)
+            {
+                while (Engine.IsPlayerAbleToMove() == false)
+                {
+                    Engine.AddCardsToPlayer();
+                    _gameRepository.Save(Engine.State.Id, Engine.State);
+                }
+
+                moveList = Engine.AIMove()!;
+                Engine.UpdatePlayerHand(moveList);
+                Engine.CardsAction(moveList);
+                Engine.UpdateCardToBeat(moveList);
+                Engine.UpdateActivePlayerNo();
+                _gameRepository.Save(Engine.State.Id, Engine.State);
+                return RedirectToPage("Index", new { PlayerId, GameId });
             }
             else
             {
-                if (Engine.IsPlayerAbleToMove() == false)
+                return RedirectToPage("Index", new { PlayerId, GameId });
+            }
+        }
+        if (!moveListString.IsNullOrEmpty())
+        {
+            moveList = JsonConvert.DeserializeObject<List<GameCard>>(moveListString)!;
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, "The move list is empty. Please select at least one card.");
+        }
+        
+        Engine = new GameEngine()
+        {
+            State = gameState
+        };
+        if (Engine.IsGameOver() == false)
+        {
+            Engine.DetermineWinner();
+            
+            if (Engine.IsMoveValid(moveList) == false) 
+            {
+                ModelState.AddModelError(string.Empty, "Move is illegal, make sure first selected card beats current card to beat!");
+            }
+            else
+            {
+                Engine.UpdatePlayerHand(moveList);
+                if (moveList[0].CardColor == ECardColor.Black)
                 {
-                    
+                    // TODO
+                    ECardColor playerColorChange = ECardColor.None;
+                    Engine.CardsAction(moveList, playerColorChange);
                 }
                 else
                 {
-                    if (Engine.IsMoveValid(moveList) == false)
-                    {
-                        
-                    }
-                    else
-                    {
-                        Engine.UpdatePlayerHand(moveList);
-                        if (moveList[0].CardColor == ECardColor.Black)
-                        {
-                            // TODO
-                            ECardColor playerColorChange = ECardColor.None;
-                            Engine.CardsAction(moveList, playerColorChange);
-                        }
-                        else
-                        {
-                            Engine.CardsAction(moveList);    
-                        }
-                        Engine.UpdateCardToBeat(moveList);
-                        Engine.UpdateActivePlayerNo();
-                        _gameRepository.Save(Engine.State.Id, Engine.State);
-                    }
+                    Engine.CardsAction(moveList);    
                 }
+                Engine.UpdateCardToBeat(moveList);
+                Engine.UpdateActivePlayerNo();
+                _gameRepository.Save(Engine.State.Id, Engine.State);
+                TempData["InfoMessage"] = "Move successful!";
+                while (Engine.IsPlayerAbleToMove() == false)
+                {
+                    Engine.AddCardsToPlayer();
+                    _gameRepository.Save(Engine.State.Id, Engine.State);
+                }
+                /*if (Engine.State.Players[Engine.State.ActivePlayerNo].PlayerType == EPlayerType.Ai)
+                {
+                    moveList = [];
+                    moveList = Engine.AIMove()!;
+                    Engine.UpdatePlayerHand(moveList);
+                    Engine.CardsAction(moveList);
+                    Engine.UpdateCardToBeat(moveList);
+                    Engine.UpdateActivePlayerNo();
+                    _gameRepository.Save(Engine.State.Id, Engine.State);                    
+                }*/
+                return RedirectToPage("Index",new {PlayerId,GameId});
             }
         }
         else
         {
-            Engine.DetermineWinner();
-            Engine.DetermineLoser();
+            return RedirectToPage("Index", new { PlayerId, GameId });
         }
+
+        return Page();
     }
 }

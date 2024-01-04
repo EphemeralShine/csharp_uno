@@ -172,3 +172,7 @@
 .card.Add4:after{
     content:"+4";
 }
+
+[class*="selected"] {
+    border: 5px solid black;
+}

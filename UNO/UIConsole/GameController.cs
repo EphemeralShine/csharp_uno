@@ -184,11 +184,11 @@ public class GameController
         Console.WriteLine("<<<>>> GAME OVER <<<>>> GAME OVER <<<>>> GAME OVER <<<>>>");
         if (_gameEngine.State.Placings.Count > 0)
         {
-            Console.WriteLine($"The Winner is: {_gameEngine.State.Placings.Dequeue().Name}");
+            Console.WriteLine($"The Winner is: {_gameEngine.State.Placings[0].Name}");
         }
         if (_gameEngine.State.Placings.Count > 0) 
         {
-            Console.WriteLine($"The loser is: {_gameEngine.State.Placings.Dequeue().Name}");
+            Console.WriteLine($"The loser is: {_gameEngine.State.Placings[1].Name}");
         }
         Console.WriteLine("Press enter to proceed:");
         Console.ReadLine();

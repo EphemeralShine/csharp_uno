@@ -45,7 +45,6 @@ namespace WebApplication1.Pages.Games
             {
                 State =
                 {
-                    Id = new Guid(),
                     GameRules =
                     {
                         MultipleCardMoves = MultipleCardMoves,
