@@ -58,6 +58,7 @@ public class Index : PageModel
         return Engine.State.Players.IndexOf(player!);
     }
 
+    [BindProperty] public ECardColor ColorChange { get; set; } = ECardColor.None;
     public IActionResult OnPost(string moveListString)
     {
         List<GameCard> moveList = new List<GameCard>();
@@ -117,16 +118,11 @@ public class Index : PageModel
             else
             {
                 Engine.UpdatePlayerHand(moveList);
-                if (moveList[0].CardColor == ECardColor.Black)
+                if (ColorChange != ECardColor.None && ColorChange != ECardColor.Black)
                 {
-                    // TODO
-                    ECardColor playerColorChange = ECardColor.None;
-                    Engine.CardsAction(moveList, playerColorChange);
+                    Engine.ChangeColor(ColorChange);
                 }
-                else
-                {
-                    Engine.CardsAction(moveList);    
-                }
+                Engine.CardsAction(moveList);    
                 Engine.UpdateCardToBeat(moveList);
                 Engine.State.Players[Engine.State.ActivePlayerNo].UnoImmune = false;
                 Engine.UpdateActivePlayerNo();

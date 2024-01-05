@@ -1,7 +1,6 @@
 ﻿@page
 @using Domain
 @using Helpers
-@using Microsoft.EntityFrameworkCore
 @model WebApplication1.Pages.Play.Index
 
 @{
@@ -143,12 +142,23 @@ else
             @if (Model.PlayerId == Model.Engine.State.Players[Model.Engine.State.ActivePlayerNo].Id)
             {
                 <div>
-                    <form method="post">
+                    <form id="submitForm" method="post">
                         <input type="hidden" id="moveListString" name="moveListString"/>
-                        <button type="submit" class="btn btn-primary" style="margin-bottom: 25px">Submit Selected Cards</button>
+                        <input type="hidden" asp-for="ColorChange"/>
+                        <button type="submit" class="btn btn-primary" style="margin-bottom: 25px" onclick="checkAndSubmitForm()">Submit Selected Cards</button>
                     </form>
                 </div>
             }
+            <div class="form-group" hidden id="colorSelectionDiv">
+                <label class="control-label">New Color</label>
+                <select asp-for="@Model.ColorChange" class="form-control">
+                    @foreach (var item in Html.GetEnumSelectList<ECardColor>())
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="@Model.ColorChange" class="text-danger"></span>
+            </div>
             <div>
                 <form method="post">
                     <input type="hidden" id="moveListString" name="moveListString" value="UNO"/>
@@ -223,7 +233,7 @@ else
             </div>
     </div>
     </body>
-    
+
     @section Scripts
     {
         @if (Model.PlayerId != Model.Engine.State.Players[Model.Engine.State.ActivePlayerNo].Id)
@@ -278,11 +288,19 @@ else
         }
         return -1; // Card not found
     }
-           </script> 
+    
+    function checkAndSubmitForm() {
+        // Check if the first card has a color of black
+        if (moveList.length > 0 && moveList[0].cardColor === 'Black') {
+           document.getElementById('ColorChange').value = prompt('Please enter the color for the Black card:', 'Red');
+        }
+            document.getElementById('submitForm').submit();
+    }
+           </script>
         }
     }
 }
-    </html >
+</html >
 
 
 

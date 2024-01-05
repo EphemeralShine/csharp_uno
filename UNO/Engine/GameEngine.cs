@@ -365,6 +365,11 @@ public class GameEngine
         }
     }
 
+    public void ChangeColor(ECardColor colorChange)
+    {
+        State.CurrentColor = colorChange;
+    }
+
     //AI stuff
     public List<GameCard>? AIMove()
     {
