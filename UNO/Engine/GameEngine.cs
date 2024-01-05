@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Player = Domain.Database.Player;
 
 namespace UnoEngine;
 
@@ -304,8 +305,66 @@ public class GameEngine
         var availableCards = 87;
         return availableCards / State.GameRules.HandSize;
     }
-    
-    
+
+    public string Uno(Guid callerId)
+    {
+        var caller = State.Players.FirstOrDefault(p => p.Id == callerId);
+        if (caller == null)
+        {
+            return "";
+        }
+
+        List<Domain.Player> unoList = [];
+        List<Domain.Player> unoNonImmuneList = [];
+        foreach (var player in State.Players)
+        {
+            if (player.PlayerHand.Count == 1)
+            {
+                unoList.Add(player);
+            }
+        }
+
+        foreach (var player in unoList)
+        {
+            if (!player.UnoImmune)
+            {
+                unoNonImmuneList.Add(player);
+            }
+        }
+
+        if (unoNonImmuneList.Count != 0)
+        {
+            if (unoList.Contains(caller))
+            {
+                caller.UnoImmune = true;
+                return "UNO applied to yourself!";
+            }
+            else
+            {
+                foreach (var p in unoNonImmuneList)
+                {
+                    p.PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                    p.PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                    p.UnoImmune = true;
+                }
+                return "UNO successful, cards added to opponents!";
+            }
+        }
+        else
+        {
+            if (unoList.Count != 0)
+            {
+                return "Every player with 1 card has already said UNO, no action!";
+            }
+            else
+            {
+                caller.PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                caller.PlayerHand.Add(State.CardsNotInPlay.Dequeue());
+                return "No players with 1 card, adding 2 to your hand!";
+            }
+        }
+    }
+
     //AI stuff
     public List<GameCard>? AIMove()
     {

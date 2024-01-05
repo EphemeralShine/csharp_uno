@@ -62,12 +62,12 @@ public class Index : PageModel
     {
         List<GameCard> moveList = new List<GameCard>();
         var gameState = _gameRepository.LoadGame(GameId);
+        Engine = new GameEngine()
+        {
+            State = gameState
+        };
         if (moveListString == "AI")
         {
-            Engine = new GameEngine()
-            {
-                State = gameState
-            };
             if (Engine.IsGameOver() == false)
             {
                 while (Engine.IsPlayerAbleToMove() == false)
@@ -80,7 +80,9 @@ public class Index : PageModel
                 Engine.UpdatePlayerHand(moveList);
                 Engine.CardsAction(moveList);
                 Engine.UpdateCardToBeat(moveList);
+                Engine.State.Players[Engine.State.ActivePlayerNo].UnoImmune = false;
                 Engine.UpdateActivePlayerNo();
+                Engine.State.LastMove = moveList;
                 _gameRepository.Save(Engine.State.Id, Engine.State);
                 return RedirectToPage("Index", new { PlayerId, GameId });
             }
@@ -89,19 +91,21 @@ public class Index : PageModel
                 return RedirectToPage("Index", new { PlayerId, GameId });
             }
         }
-        if (!moveListString.IsNullOrEmpty())
+        if (moveListString == "UNO")
+        {
+            var res = Engine.Uno(PlayerId);
+            _gameRepository.Save(Engine.State.Id, Engine.State);
+            TempData["InfoMessage"] = res;
+            return RedirectToPage("Index", new { PlayerId, GameId });
+        }
+        if (!moveListString.IsNullOrEmpty() && GetPlayerNo() == Engine.State.ActivePlayerNo)
         {
             moveList = JsonConvert.DeserializeObject<List<GameCard>>(moveListString)!;
         }
         else
         {
-            ModelState.AddModelError(string.Empty, "The move list is empty. Please select at least one card.");
+            ModelState.AddModelError(string.Empty, "Something went wrong with the move, perhaps it was empty?");
         }
-        
-        Engine = new GameEngine()
-        {
-            State = gameState
-        };
         if (Engine.IsGameOver() == false)
         {
             Engine.DetermineWinner();
@@ -124,7 +128,9 @@ public class Index : PageModel
                     Engine.CardsAction(moveList);    
                 }
                 Engine.UpdateCardToBeat(moveList);
+                Engine.State.Players[Engine.State.ActivePlayerNo].UnoImmune = false;
                 Engine.UpdateActivePlayerNo();
+                Engine.State.LastMove = moveList;
                 _gameRepository.Save(Engine.State.Id, Engine.State);
                 TempData["InfoMessage"] = "Move successful!";
                 while (Engine.IsPlayerAbleToMove() == false)

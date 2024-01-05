@@ -16,4 +16,6 @@ public class GameState
     public Rules GameRules { get; set; } = new();
 
     public List<Player> Placings { get; set; } = new();
+    
+    public List<GameCard>? LastMove { get; set; }
 }

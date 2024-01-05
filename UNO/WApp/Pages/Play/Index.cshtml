@@ -1,6 +1,7 @@
 ﻿@page
 @using Domain
 @using Helpers
+@using Microsoft.EntityFrameworkCore
 @model WebApplication1.Pages.Play.Index
 
 @{
@@ -63,8 +64,8 @@ else
                 <br>
             }
         </div>
-        <div class="col"></div>
-        <div class="col"></div>
+        <div class="col">
+        </div>
         <div class="col d-flex align-items-center">
             <h3><span>Current card to beat 👉</span></h3>
         </div>
@@ -144,10 +145,16 @@ else
                 <div>
                     <form method="post">
                         <input type="hidden" id="moveListString" name="moveListString"/>
-                        <button type="submit" class="btn btn-primary" style="margin-bottom: 50px">Submit Selected Cards</button>
+                        <button type="submit" class="btn btn-primary" style="margin-bottom: 25px">Submit Selected Cards</button>
                     </form>
                 </div>
             }
+            <div>
+                <form method="post">
+                    <input type="hidden" id="moveListString" name="moveListString" value="UNO"/>
+                    <button type="submit" class="btn btn-primary" style="margin-bottom: 25px">UNO</button>
+                </form>
+            </div>
             @if (Model.Engine.State.Players[Model.Engine.State.ActivePlayerNo].PlayerType == EPlayerType.Ai)
             {
                 <div>
@@ -161,6 +168,39 @@ else
             {
                 <div class="alert alert-info">
                     @TempData["InfoMessage"]
+                </div>
+            }
+            @if (Model.Engine.State.LastMove != null && Model.Engine.State.LastMove.Count != 0 && Model.Engine.State.GameRules.MultipleCardMoves)
+            {
+                <div class="row"><b><span>Last move was:</span></b></div>
+                <div class="row">
+                <div id="cardContainer" class="row">
+                    @foreach (var card in Model.Engine.State.LastMove)
+                    {
+                        <div class="card @card.CardValue @card.CardColor.ToString().ToLower()">
+                            <span class="inner">
+                                <span class="mark">
+                                    @if (card.CardValue == ECardValue.Add2)
+                                    {
+                                        <text>+2</text>
+                                    }
+                                    else if (card.CardValue == ECardValue.Add4)
+                                    {
+                                        <text>+4🧮</text>
+                                    }
+                                    else if (card.CardValue == ECardValue.ChangeColor)
+                                    {
+                                        <text>🧮</text>
+                                    }
+                                    else
+                                    {
+                                        <text>@card.CardValue.Description()</text>
+                                    }
+                                </span>
+                            </span>
+                        </div>
+                    }
+                </div>
                 </div>
             }
     }

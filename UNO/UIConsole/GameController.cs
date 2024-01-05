@@ -24,9 +24,17 @@ public class GameController
         Console.Clear();
         //1.Show first card to beat
         Console.WriteLine($"Starting card is: {_gameEngine.State.CardToBeat}");
+        if (_gameEngine.State.LastMove != null && _gameEngine.State.LastMove.Count != 0)
+        {
+            ConsoleVisualization.DrawPreviousMove(_gameEngine.State);
+        }
         while (_gameEngine.IsGameOver() == false) //game over loop
         {
             _gameEngine.DetermineWinner();
+            if (_gameEngine.State.LastMove != null && _gameEngine.State.LastMove.Count != 0)
+            {
+                ConsoleVisualization.DrawPreviousMove(_gameEngine.State);
+            }
             //Empty Movelist
             List<GameCard>? moveList = new();
             //Ask player if he is ready to see his deck
@@ -70,8 +78,8 @@ public class GameController
                         _gameEngine.CardsAction(moveList);
                         _gameEngine.UpdateCardToBeat(moveList);
                         _gameEngine.UpdateActivePlayerNo();
+                        _gameEngine.State.LastMove = moveList;
                         _repository.Save(_gameEngine.State.Id, _gameEngine.State);                    
-                        ConsoleVisualization.DrawPreviousMove(moveList, _gameEngine.State);
                         break;
                     }
                 }
@@ -171,7 +179,7 @@ public class GameController
                     //Update player
                     _gameEngine.UpdateActivePlayerNo();
                     _repository.Save(_gameEngine.State.Id, _gameEngine.State);
-                    ConsoleVisualization.DrawPreviousMove(moveList, _gameEngine.State);
+                    _gameEngine.State.LastMove = moveList;
                     break;
                 }
 

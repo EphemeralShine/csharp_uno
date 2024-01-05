@@ -8,4 +8,6 @@ public class Player
     
     public List<GameCard> PlayerHand { get; set; } = new();
 
+    public bool UnoImmune { get; set; } = false;
+
 }
